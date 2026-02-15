@@ -18,6 +18,7 @@ const router = express.Router();
  *         required: true
  *         schema:
  *           type: string
+ *           minLength: 1
  *         description: Search term (name or email)
  *     responses:
  *       200:
@@ -28,35 +29,29 @@ const router = express.Router();
  *               type: array
  *               items:
  *                 type: object
- *                 required: [id, fullName, role, timezone]
  *                 properties:
- *                   id:
- *                     type: string
- *                     format: uuid
- *                   fullName:
- *                     type: string
- *                   email:
- *                     type: string
- *                     nullable: true
- *                   role:
- *                     type: string
- *                     example: developer
- *                   timezone:
- *                     type: string
- *                     example: UTC
- *             example:
- *               - id: "7f2c1e12-9d0a-4b1e-9e9c-1a2b3c4d5e6f"
- *                 fullName: "Test Admin"
- *                 email: "testadmin@example.com"
- *                 role: "admin"
- *                 timezone: "America/Los_Angeles"
+ *                   id: { type: string, format: uuid }
+ *                   fullName: { type: string }
+ *                   email: { type: string, nullable: true }
+ *                   role: { type: string }
+ *                   timezone: { type: string }
+ *       400:
+ *         description: Missing or empty query param `q`
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error: { type: string }
  *       401:
  *         description: Unauthorized
  */
 router.get('/search', async (req, res, next) => {
   try {
-    const q = (req.query.q || '').trim();
-    if (!q) return res.json([]);
+    const q = (req.query.q ?? '').trim();
+    if (!q) {
+      return res.status(400).json({ error: 'Query param `q` is required' });
+    }
 
     const users = await User.findAll({
       where: {
