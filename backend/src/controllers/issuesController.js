@@ -130,7 +130,7 @@ export const deleteIssue = async (req, res) => {
 
 export const getAllIssues = async (req, res) => {
   try {
-    const { search, type, assignee, priority, status } = req.query;
+    const { search, type, reporterId, priority, status } = req.query;
 
     const where = {};
 
