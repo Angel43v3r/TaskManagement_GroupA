@@ -129,3 +129,33 @@ export const deleteIssue = async (req, res) => {
     });
   }
 };
+
+export const getAllIssues = async (req, res) => {
+  try {
+    const {
+      issueType,
+      assignee,
+      priority,
+      status,
+    } = req.query;
+
+    const where = {};
+
+    if (issueType) where.issueType = issueType;
+    if (assignee) where.assignee = Number(assignee);
+    if (priority) where.priority = priority;
+    if (status) where.status = status;
+
+    const issues = await Issue.findAll({ where });
+
+    res.status(200).json({
+      success: true,
+      issues,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
