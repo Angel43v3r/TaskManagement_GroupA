@@ -136,7 +136,7 @@ export const getAllIssues = async (req, res) => {
     const where = {};
 
     if (type) where.type = type;
-    if (assignee) where.assignee = Number(assignee);
+    if (assignee) where.assignee = assignee;
     if (priority) where.priority = priority;
     if (status) where.status = status;
     if (search) {
