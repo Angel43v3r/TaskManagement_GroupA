@@ -109,7 +109,7 @@ export const deleteIssue = async (req, res) => {
   try {
     const { id } = req.params;
     const issue = await Issue.findByPk(id);
-    
+
     if (!issue) {
       return res.status(404).json({
         success: false,
@@ -121,7 +121,7 @@ export const deleteIssue = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message:'Issue deleted successfully',
+      message: 'Issue deleted successfully',
     });
   } catch (error) {
     res.status(500).json({
@@ -133,13 +133,7 @@ export const deleteIssue = async (req, res) => {
 
 export const getAllIssues = async (req, res) => {
   try {
-    const {
-      search,
-      issueType,
-      assignee,
-      priority,
-      status,
-    } = req.query;
+    const { search, issueType, assignee, priority, status } = req.query;
 
     const where = {};
 
@@ -147,10 +141,11 @@ export const getAllIssues = async (req, res) => {
     if (assignee) where.assignee = Number(assignee);
     if (priority) where.priority = priority;
     if (status) where.status = status;
-    if (search) {where[Op.or] = [
-      { summary: {[Op.iLike]: `%${search}%`} },
-      { description: { [Op.iLike]: `%${search}%` } },
-      { labels: { [Op.iLike]: `%${search}%` } },
+    if (search) {
+      where[Op.or] = [
+        { summary: { [Op.iLike]: `%${search}%` } },
+        { description: { [Op.iLike]: `%${search}%` } },
+        { labels: { [Op.iLike]: `%${search}%` } },
       ];
     }
 
@@ -167,4 +162,3 @@ export const getAllIssues = async (req, res) => {
     });
   }
 };
-
