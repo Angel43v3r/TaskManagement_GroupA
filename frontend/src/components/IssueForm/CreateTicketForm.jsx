@@ -21,7 +21,6 @@ function CreateTicketForm() {
     assignee: null,
     priority: 'Low',
     labels: '',
-    sprint: '',
     storyPoints: 1,
     dueDate: null,
   });
@@ -44,7 +43,6 @@ function CreateTicketForm() {
       assigneeID: ticketData.assignee?.id ?? null,
       priority: ticketData.priority,
       labels: ticketData.labels.split(',').map((l) => l.trim()),
-      sprint: ticketData.sprint,
       storyPoints: ticketData.storyPoints,
     };
     //console.log(payload);
