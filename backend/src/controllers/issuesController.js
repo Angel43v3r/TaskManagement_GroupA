@@ -7,7 +7,7 @@ export const createIssue = async (req, res) => {
       type,
       summary,
       description,
-      reporterID,
+      reporterId,
       priority,
       title,
       storyPoints,
@@ -18,7 +18,7 @@ export const createIssue = async (req, res) => {
       type,
       summary,
       description,
-      reporterID,
+      reporterId,
       priority,
       title,
       storyPoints,
@@ -74,9 +74,8 @@ export const updateIssue = async (req, res) => {
       'type',
       'summary',
       'description',
-      'assignee',
+      'reporerId',
       'priority',
-      'labels',
       'storyPoints',
       'dueDate',
     ];
@@ -136,7 +135,7 @@ export const getAllIssues = async (req, res) => {
     const where = {};
 
     if (type) where.type = type;
-    if (assignee) where.assignee = assignee;
+    if (reporterId) where.assignee = assignee;
     if (priority) where.priority = priority;
     if (status) where.status = status;
     if (search) {
