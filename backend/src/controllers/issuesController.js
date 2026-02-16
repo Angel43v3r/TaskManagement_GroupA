@@ -9,7 +9,6 @@ export const createIssue = async (req, res) => {
       assignee,
       priority,
       labels,
-      sprint,
       storyPoints,
       dueDate,
     } = req.body;
@@ -21,14 +20,13 @@ export const createIssue = async (req, res) => {
       assignee,
       priority,
       labels,
-      sprint,
       storyPoints,
       dueDate,
     });
 
     res.status(201).json({
       success: true,
-      ticket,
+      issue,
     });
   } catch (err) {
     console.error('Error creating ticket:', err);
@@ -41,12 +39,18 @@ export const createIssue = async (req, res) => {
 
 export const getIssueByID = async (req, res) => {
   try {
-    const { id } = req.query;
-    const where = {};
-
-    if (id) {
-      where.id = id;
+    const { id } = req.params;
+    const issue = await Issue.findByPk(id);
+    if (!issue) {
+      return res.status(404).json({
+        success: false,
+        message: 'Issue not found',
+      });
     }
+    res.status(200).json({
+      success: true,
+      issue,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -54,6 +58,74 @@ export const getIssueByID = async (req, res) => {
 
 // _req and _res used so linter does not flag unused variables in stub functions
 
-export const updateIssue = async (_req, _res) => {};
+export const updateIssue = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-export const deleteIssue = async (_req, _res) => {};
+    const issue = await Issue.findByPk(id);
+
+    if (!issue) {
+      return res.status(404).json({
+        success: false,
+        message: 'Issue not found',
+      });
+    }
+
+    const allowedFields = [
+      'issueType',
+      'summary',
+      'description',
+      'assignee',
+      'priority',
+      'labels',
+      'storyPoints',
+      'dueDate',
+    ];
+
+    const updates = {};
+    allowedFields.forEach((field) => {
+      if (req.body[field] !== undefined) {
+        updates[field] = req.body[field];
+      }
+    });
+
+    await issue.update(updates);
+
+    res.status(200).json({
+      success: true,
+      issue,
+    });
+  } catch (error) {
+    console.error('Error updating issue:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+export const deleteIssue = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const issue = await Issue.findByPk(id);
+    
+    if (!issue) {
+      return res.status(404).json({
+        success: false,
+        message: 'Issue not found',
+      });
+    }
+
+    await issue.destroy();
+
+    res.status(200).json({
+      success: true,
+      message:'Issue deleted successfully',
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
