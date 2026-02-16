@@ -1,10 +1,11 @@
 import express from 'express';
 import {
-    createIssue,
-    getAllIssues,
-    getIssueByID,
-    updateIssue,
-    deleteIssue, } from '../controllers/issuesController.js';
+  createIssue,
+  getAllIssues,
+  getIssueByID,
+  updateIssue,
+  deleteIssue,
+} from '../controllers/issuesController.js';
 
 const router = express.Router();
 
