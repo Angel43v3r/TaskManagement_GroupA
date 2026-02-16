@@ -4,23 +4,23 @@ import { Op } from 'sequelize';
 export const createIssue = async (req, res) => {
   try {
     const {
-      issueType,
+      type,
       summary,
       description,
-      assignee,
+      reporterID,
       priority,
-      labels,
+      title,
       storyPoints,
       dueDate,
     } = req.body;
 
     const issue = await Issue.create({
-      issueType,
+      type,
       summary,
       description,
-      assignee,
+      reporterID,
       priority,
-      labels,
+      title,
       storyPoints,
       dueDate,
     });
@@ -73,7 +73,7 @@ export const updateIssue = async (req, res) => {
     }
 
     const allowedFields = [
-      'issueType',
+      'type',
       'summary',
       'description',
       'assignee',
@@ -133,11 +133,11 @@ export const deleteIssue = async (req, res) => {
 
 export const getAllIssues = async (req, res) => {
   try {
-    const { search, issueType, assignee, priority, status } = req.query;
+    const { search, type, assignee, priority, status } = req.query;
 
     const where = {};
 
-    if (issueType) where.issueType = issueType;
+    if (type) where.type = type;
     if (assignee) where.assignee = Number(assignee);
     if (priority) where.priority = priority;
     if (status) where.status = status;
@@ -145,7 +145,7 @@ export const getAllIssues = async (req, res) => {
       where[Op.or] = [
         { summary: { [Op.iLike]: `%${search}%` } },
         { description: { [Op.iLike]: `%${search}%` } },
-        { labels: { [Op.iLike]: `%${search}%` } },
+        { title: { [Op.iLike]: `%${search}%` } },
       ];
     }
 
