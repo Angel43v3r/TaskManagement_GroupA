@@ -1,4 +1,5 @@
 import { Issue } from '../models/models.js';
+import { Op } from 'sequelize';
 
 export const createIssue = async (req, res) => {
   try {
@@ -133,6 +134,7 @@ export const deleteIssue = async (req, res) => {
 export const getAllIssues = async (req, res) => {
   try {
     const {
+      search,
       issueType,
       assignee,
       priority,
@@ -145,6 +147,12 @@ export const getAllIssues = async (req, res) => {
     if (assignee) where.assignee = Number(assignee);
     if (priority) where.priority = priority;
     if (status) where.status = status;
+    if (search) {where[Op.or] = [
+      { summary: {[Op.iLike]: `%${search}%`} },
+      { description: { [Op.iLike]: `%${search}%` } },
+      { labels: { [Op.iLike]: `%${search}%` } },
+      ];
+    }
 
     const issues = await Issue.findAll({ where });
 
@@ -159,3 +167,4 @@ export const getAllIssues = async (req, res) => {
     });
   }
 };
+
