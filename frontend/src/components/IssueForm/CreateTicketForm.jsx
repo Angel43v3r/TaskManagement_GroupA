@@ -7,7 +7,7 @@ import DescriptionField from './DescriptionField';
 import DueDatePicker from './DueDatePicker';
 import PriorityLabel from './PriorityLabel';
 import StoryPointButtonGroup from './StoryPointButtonGroup';
-import LabelsField from './LabelsField';
+import TitleField from './TitleField';
 import { Button, Box, Snackbar, Alert } from '@mui/material';
 
 function CreateTicketForm() {
@@ -20,7 +20,7 @@ function CreateTicketForm() {
     description: '',
     assignee: null,
     priority: 'Low',
-    labels: '',
+    title: '',
     storyPoints: 1,
     dueDate: null,
   });
@@ -37,12 +37,12 @@ function CreateTicketForm() {
     const payload = {
       project: ticketData.project?.id ?? null,
       issueType: ticketData.issueType,
-      title: ticketData.summary,
+      summary: ticketData.summary,
       description: ticketData.description,
       dueDate: ticketData.dueDate?.toISOString() ?? null,
       assigneeID: ticketData.assignee?.id ?? null,
       priority: ticketData.priority,
-      labels: ticketData.labels.split(',').map((l) => l.trim()),
+      title: ticketData.labels.split(',').map((l) => l.trim()),
       storyPoints: ticketData.storyPoints,
     };
     //console.log(payload);
@@ -84,6 +84,10 @@ function CreateTicketForm() {
         onSubmit={handleCreateTicketSubmit}
         sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
       >
+        <TitleField
+          title={ticketData.labels}
+          onUpdateTitle={handleChange('title')}
+        />
         <ProjectAutocomplete
           value={ticketData.project}
           onChange={handleChange('project')}
@@ -116,10 +120,6 @@ function CreateTicketForm() {
         <StoryPointButtonGroup
           points={ticketData.storyPoints}
           onUpdatePoints={handleChange('storyPoints')}
-        />
-        <LabelsField
-          labels={ticketData.labels}
-          onUpdateLabels={handleChange('labels')}
         />
         <Button variant="outlined" component="label">
           Add Attachment
