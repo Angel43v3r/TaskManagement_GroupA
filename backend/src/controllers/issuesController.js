@@ -57,8 +57,6 @@ export const getIssueByID = async (req, res) => {
   }
 };
 
-// _req and _res used so linter does not flag unused variables in stub functions
-
 export const updateIssue = async (req, res) => {
   try {
     const { id } = req.params;

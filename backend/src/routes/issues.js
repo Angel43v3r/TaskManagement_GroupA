@@ -1,21 +1,26 @@
 import express from 'express';
-import { issueController } from '../controllers/issuesController.js';
+import {
+    createIssue,
+    getAllIssues,
+    getIssueByID,
+    updateIssue,
+    deleteIssue, } from '../controllers/issuesController.js';
 
 const router = express.Router();
 
 // post
-router.post('/', issueController.createIssue);
+router.post('/', createIssue);
 
 // get all issues (with filtering)
-router.get('/', issueController.getAllIssues);
+router.get('/', getAllIssues);
 
 // get by ID
-router.get('/:id', issueController.getIssueByID);
+router.get('/:id', getIssueByID);
 
 // patch
-router.patch('/:id', issueController.updateIssue);
+router.patch('/:id', updateIssue);
 
 // delete
-router.delete('/:id', issueController.deleteIssue);
+router.delete('/:id', deleteIssue);
 
 export default router;
