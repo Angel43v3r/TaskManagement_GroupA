@@ -54,7 +54,7 @@ function CreateTicketForm() {
 
   const createTicket = async (payload) => {
     try {
-      const res = await fetch('/api/tickets', {
+      const res = await fetch('/api/issues', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
