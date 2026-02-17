@@ -71,7 +71,7 @@ export const updateIssue = async (req, res) => {
     const allowedFields = [
       'type',
       'description',
-      'reporerId',
+      'reporterId',
       'priority',
       'storyPoints',
       'dueDate',
