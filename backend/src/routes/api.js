@@ -1,6 +1,7 @@
 import express from 'express';
 import { verifyToken } from '../middleware/auth.js';
 import { requireRole } from '../middleware/authorize.js';
+import issuesRouter from './issues.js';
 
 const router = express.Router();
 
@@ -93,5 +94,8 @@ router.get('/clinician-only', verifyToken, requireRole('clinician'), handler);
  *         description: Forbidden
  */
 router.get('/developer-only', verifyToken, requireRole('developer'), handler);
+
+router.use('/issues', issuesRouter);
+
 
 export default router;
