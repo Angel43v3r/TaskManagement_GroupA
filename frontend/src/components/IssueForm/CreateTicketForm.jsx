@@ -2,7 +2,6 @@ import { useState } from 'react';
 import IssueTypeToggle from './issueTypeToggle';
 import UserAutocomplete from './userAutoComplete';
 import ProjectAutocomplete from './ProjectAutocomplete';
-import SummaryField from './SummaryField';
 import DescriptionField from './DescriptionField';
 import DueDatePicker from './DueDatePicker';
 import PriorityLabel from './PriorityLabel';
@@ -16,7 +15,6 @@ function CreateTicketForm() {
   const [ticketData, setTicketData] = useState({
     project: null,
     issueType: 'Story',
-    summary: '',
     description: '',
     assignee: null,
     priority: 'Low',
@@ -37,7 +35,6 @@ function CreateTicketForm() {
     const payload = {
       project: ticketData.project?.id ?? null,
       issueType: ticketData.issueType,
-      summary: ticketData.summary,
       description: ticketData.description,
       dueDate: ticketData.dueDate?.toISOString() ?? null,
       assigneeID: ticketData.assignee?.id ?? null,
@@ -96,10 +93,6 @@ function CreateTicketForm() {
           selectedType={ticketData.issueType}
           onTypeChange={handleChange('issueType')}
         />
-        <SummaryField
-          summary={ticketData.summary}
-          onUpdateSummary={handleChange('summary')}
-        />
         <DescriptionField
           description={ticketData.description}
           onUpdateDescription={handleChange('description')}
@@ -131,11 +124,7 @@ function CreateTicketForm() {
         >
           <Alert severity="error">{errorMessage}</Alert>
         </Snackbar>
-        <Button
-          type="submit"
-          variant="contained"
-          disabled={!ticketData.summary}
-        >
+        <Button type="submit" variant="contained" disabled={!ticketData.title}>
           Create Ticket
         </Button>
       </Box>
