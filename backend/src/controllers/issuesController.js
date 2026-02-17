@@ -5,7 +5,6 @@ export const createIssue = async (req, res) => {
   try {
     const {
       type,
-      summary,
       description,
       reporterId,
       priority,
@@ -16,7 +15,6 @@ export const createIssue = async (req, res) => {
 
     const issue = await Issue.create({
       type,
-      summary,
       description,
       reporterId,
       priority,
@@ -72,7 +70,6 @@ export const updateIssue = async (req, res) => {
 
     const allowedFields = [
       'type',
-      'summary',
       'description',
       'reporerId',
       'priority',
@@ -140,7 +137,6 @@ export const getAllIssues = async (req, res) => {
     if (status) where.status = status;
     if (search) {
       where[Op.or] = [
-        { summary: { [Op.iLike]: `%${search}%` } },
         { description: { [Op.iLike]: `%${search}%` } },
         { title: { [Op.iLike]: `%${search}%` } },
       ];
