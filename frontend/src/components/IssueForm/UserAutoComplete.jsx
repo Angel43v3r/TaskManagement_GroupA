@@ -19,7 +19,7 @@ function UserAutocomplete({ userValue, onUserValueChange }) {
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);
       }}
-      renderInput={(params) => <TextField {...params} label="Assignee" />}
+      renderInput={(params) => <TextField {...params} label="Reporter" />}
     />
   );
 }

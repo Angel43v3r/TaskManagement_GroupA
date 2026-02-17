@@ -16,7 +16,7 @@ function CreateTicketForm() {
     project: null,
     issueType: 'Story',
     description: '',
-    assignee: null,
+    reporter: null,
     priority: 'Low',
     title: '',
     storyPoints: 1,
@@ -37,7 +37,7 @@ function CreateTicketForm() {
       issueType: ticketData.issueType,
       description: ticketData.description,
       dueDate: ticketData.dueDate?.toISOString() ?? null,
-      assigneeID: ticketData.assignee?.id ?? null,
+      reporterID: ticketData.reporter?.id ?? null,
       priority: ticketData.priority,
       title: ticketData.labels.split(',').map((l) => l.trim()),
       storyPoints: ticketData.storyPoints,
@@ -102,8 +102,8 @@ function CreateTicketForm() {
           onDueDateUpdate={handleChange('dueDate')}
         />
         <UserAutocomplete
-          value={ticketData.assignee}
-          onChange={handleChange('assignee')}
+          value={ticketData.reporter}
+          onChange={handleChange('reporter')}
         />
         <PriorityLabel
           priority={ticketData.priority}
