@@ -45,7 +45,9 @@ Default admin credentials:
 - Password: admin
 
 ## Database
+
 ### PostgreSQL (Docker)
+
 - Enter the database (psql inside container):`docker exec -it taskmanagement_groupa-postgres-1 psql -U user -d backend_db`
 - Show all tables:`\dt`
 - Describe a table: `\d "<table-name>"`
