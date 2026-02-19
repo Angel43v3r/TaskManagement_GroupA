@@ -64,7 +64,7 @@ export function TasksProvider({ children }) {
 
       setTasks((prev) =>
         prev.map((task) =>
-          task.id === taskId ? {...task, status: newStatus} : task
+          task.id === taskId ? { ...task, status: newStatus } : task
         )
       );
 

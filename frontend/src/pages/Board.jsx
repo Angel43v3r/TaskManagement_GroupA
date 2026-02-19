@@ -18,7 +18,6 @@ import { useBoard } from '../context/BoardContext.jsx';
 import { useTasks } from '../context/TasksContext.jsx';
 import { useDroppable } from '@dnd-kit/core';
 import { BoardDndProvider } from '../components/board/BoardDndContext.jsx';
-ipmort { BoardDndProvider } from '../components/board/BoardDndProvider.jsx';
 
 // Column Component
 function Column({ column, tasks }) {
