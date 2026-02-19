@@ -58,6 +58,37 @@ export function TasksProvider({ children }) {
     [currentProject?.id, currentBoard?.id, fetchTasks]
   );
 
+  const moveTask = useCallback(
+    async (taskId, newStatus) => {
+      const previousTasks = [...tasks];
+
+      setTasks((prev) =>
+        prev.map((task) =>
+          task.id === taskId ? {...task, status: newStatus} : task
+        )
+      );
+
+      if (!currentProject?.id || !currentBoard?.id) {
+        return;
+      }
+
+      setUpdatingIds((prev) => new Set([...prev, taskId]));
+      try {
+        await tasksApi.update(currentProject.id, currentBoard.id, taskId, {
+          status: newStatus,
+        });
+      } catch (err) {
+        setTasks(previousTasks);
+        setError(err.message);
+      } finally {
+        setUpdatingIds(
+          (prev) => new Set([...prev].filter((id) => id !== taskId))
+        );
+      }
+    },
+    [tasks, currentProject?.id, currentBoard?.id]
+  );
+
   useEffect(() => {
     fetchTasks();
   }, [fetchTasks]);
