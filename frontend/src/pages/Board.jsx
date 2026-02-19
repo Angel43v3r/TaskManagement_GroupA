@@ -16,11 +16,19 @@ import { Link, useOutletContext } from 'react-router';
 import TaskCard from '../components/task-card/TaskCard.jsx';
 import { useBoard } from '../context/BoardContext.jsx';
 import { useTasks } from '../context/TasksContext.jsx';
+import { useDroppable } from '@dnd-kit/core';
+import { BoardDndProvider } from '../components/board/BoardDndContext.jsx';
+ipmort { BoardDndProvider } from '../components/board/BoardDndProvider.jsx';
 
 // Column Component
 function Column({ column, tasks }) {
   const columnTasks = tasks.filter((task) => task.status === column.id);
   const taskCount = columnTasks.length;
+
+  // Sets up droppable w/ column id as the drop zone identifier
+  const { isOver, setNodeRef } = useDroppable({
+    id: column.id,
+  });
 
   return (
     <Box
@@ -58,12 +66,15 @@ function Column({ column, tasks }) {
 
       {/* Task Cards */}
       <Box
+        ref={setNodeRef}
         sx={{
           flex: 1,
-          bgcolor: '#f5f5f5',
+          bgcolor: isOver ? '#e3f2fd' : '#f5f5f5',
           borderRadius: 1,
           p: 1.5,
           minHeight: 200,
+          transition: 'background-color 0.2s ease',
+          border: isOver ? '2px dashed #2196f3' : '2px dashed transparent',
         }}
       >
         {columnTasks.map((task) => (
@@ -74,7 +85,7 @@ function Column({ column, tasks }) {
   );
 }
 
-export default function Board() {
+function BoardContent() {
   const { currentBoard } = useBoard();
   const { tasks } = useTasks();
   const { project } = useOutletContext();
@@ -179,5 +190,14 @@ export default function Board() {
         </Box>
       </Box>
     </Box>
+  );
+}
+
+// Main Board component wraps content w/ DnD provider
+export default function Board() {
+  return (
+    <BoardDndProvider>
+      <BoardContent />
+    </BoardDndProvider>
   );
 }
