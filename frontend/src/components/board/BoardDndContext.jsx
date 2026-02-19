@@ -14,7 +14,7 @@ const BoardDndContext = createContext(null);
 
 // Provider component that wraps the board w/ drag-n-drop functionality
 export function BoardDndProvider({ children }) {
-  const { tasks, moveTask } = useTasks();
+  const { tasks, moveTask, reorderTasks } = useTasks();
   const [activeTask, setActiveTask] = useState(null);
 
   // Configures sensors w/ activation constraint to prevent accidental drags
@@ -33,27 +33,45 @@ export function BoardDndProvider({ children }) {
     setActiveTask(task || null);
   };
 
-  // Handler when drag ends, updates task status if dropped in valid column
+  // Handler when drag ends, updates task status or reorders within column
   const handleDragEnd = (event) => {
     const { active, over } = event;
     setActiveTask(null);
 
     if (!over) return;
 
-    const taskId = active.id;
-    const newStatus = over.id;
+    const activeId = active.id;
+    const overId = over.id;
 
-    const task = tasks.find((t) => t.id === taskId);
-    if (!task) return;
+    // Finds the dragged task
+    const activeTask = tasks.find((t) => t.id === activeId);
+    if (!activeTask) return;
 
-    if (task.status !== newStatus) {
-      moveTask(taskId, newStatus);
+    // Checks if dropped over a column or another task
+    const overTask = tasks.find((t) => t.id === overId);
+
+    if (overTask) {
+      // Dropped over another task
+      if (activeTask.status === overTask.status) {
+        // Same column: reorder
+        const columnTasks = tasks.filter((t) => t.status === activeTask.status);
+        const oldIndex = columnTasks.findIndex((t) => t.id === activeId);
+        const newIndex = columnTasks.findIndex((t) => t.id === overId);
+
+        if (oldIndex !== newIndex) {
+          reorderTasks(activeTask.status, oldIndex, newIndex);
+        }
+      } else {
+        // Different column: move to new status
+        moveTask(activeId, overTask.status);
+      }
+    } else {
+      // Dropped over a column (empty area)
+      const newStatus = overId;
+      if (activeTask.status !== newStatus) {
+        moveTask(activeId, newStatus);
+      }
     }
-  };
-
-  // Handler during drag (could be used for hover effects)
-  const handleDragOver = (event) => {
-    // Currently not needed, but available for future enhancements
   };
 
   return (
@@ -63,7 +81,6 @@ export function BoardDndProvider({ children }) {
         collisionDetection={closestCorners}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
-        onDragOver={handleDragOver}
       >
         {children}
         {/* Renders the dragged card outside normal flow */}
@@ -75,4 +92,5 @@ export function BoardDndProvider({ children }) {
   );
 }
 
+// Hood to access DnD context state
 export const useBoardDnd = () => useContext(BoardDndContext);

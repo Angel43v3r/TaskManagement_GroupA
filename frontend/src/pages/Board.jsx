@@ -17,12 +17,14 @@ import TaskCard from '../components/task-card/TaskCard.jsx';
 import { useBoard } from '../context/BoardContext.jsx';
 import { useTasks } from '../context/TasksContext.jsx';
 import { useDroppable } from '@dnd-kit/core';
+import { SortableContext, SortableList, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { BoardDndProvider } from '../components/board/BoardDndContext.jsx';
 
 // Column Component
 function Column({ column, tasks }) {
   const columnTasks = tasks.filter((task) => task.status === column.id);
   const taskCount = columnTasks.length;
+  const taskIds = columnTasks.map((task) => task.id);
 
   // Sets up droppable w/ column id as the drop zone identifier
   const { isOver, setNodeRef } = useDroppable({
@@ -76,9 +78,11 @@ function Column({ column, tasks }) {
           border: isOver ? '2px dashed #2196f3' : '2px dashed transparent',
         }}
       >
-        {columnTasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
-        ))}
+        <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
+          {columnTasks.map((task) => (
+            <TaskCard key={task.id} task={task} />
+          ))}
+        </SortableContext>
       </Box>
     </Box>
   );

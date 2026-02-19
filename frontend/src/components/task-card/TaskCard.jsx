@@ -7,7 +7,7 @@ import {
 } from '@mui/icons-material';
 import StoryPoints from './StoryPoints.jsx';
 import Assignee from './Assignee.jsx';
-import { useDraggable } from '@dnd-kit/core';
+import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 // Task type constants
@@ -61,18 +61,31 @@ function getTaskTypeIcon(type) {
 }
 
 export default function TaskCard({ task, isDragging = false }) {
-  // Sets up draggable w/ task id
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+  // Sets up sortable w/ task id for reordering support
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging: isSortableDragging,
+  } = useSortable({
     id: task.id,
   });
 
-  // Applies transform styles during drag
+  // Applies transform and transition styles during drag
   const style = {
     transform: CSS.Translate.toString(transform),
+    transition,
+    opacity: isSortableDragging ? 0.5 : 1,
   };
 
   return (
     <Paper
+      ref={setNodeRef}
+      style={style}
+      {...listeners}
+      {...attributes}
       elevation={0}
       sx={{
         p: 2,
@@ -80,9 +93,14 @@ export default function TaskCard({ task, isDragging = false }) {
         bgcolor: 'white',
         border: '1px solid #e0e0e0',
         borderRadius: 1,
-        cursor: 'pointer',
+        cursor: 'grab',
+        opacity: isDragging ? 0.9 : 1,
+        boxShadow: isDragging ? '0 8px 16px rgba(0,0,0,0.15)' : 'none',
         '&:hover': {
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        },
+        '&:active': {
+          cursor: 'grabbing',
         },
       }}
     >
