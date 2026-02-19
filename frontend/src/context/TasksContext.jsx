@@ -3,7 +3,7 @@ import { tasksApi } from '../api/tasksApi';
 import { useProject } from './ProjectContext';
 import { useBoard } from './BoardContext';
 import { useContext } from 'react';
-import { arrayMove } from '@dnd-kit/sortable'
+import { arrayMove } from '@dnd-kit/sortable';
 
 const TasksContext = createContext(null);
 
@@ -132,7 +132,16 @@ export function TasksProvider({ children }) {
 
   return (
     <TasksContext.Provider
-      value={{ tasks, loading, error, fetchTasks, updateTask, updatingIds, moveTask, reorderTasks }}
+      value={{
+        tasks,
+        loading,
+        error,
+        fetchTasks,
+        updateTask,
+        updatingIds,
+        moveTask,
+        reorderTasks,
+      }}
     >
       {children}
     </TasksContext.Provider>

@@ -17,7 +17,11 @@ import TaskCard from '../components/task-card/TaskCard.jsx';
 import { useBoard } from '../context/BoardContext.jsx';
 import { useTasks } from '../context/TasksContext.jsx';
 import { useDroppable } from '@dnd-kit/core';
-import { SortableContext, SortableList, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import {
+  SortableContext,
+  SortableList,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { BoardDndProvider } from '../components/board/BoardDndContext.jsx';
 
 // Column Component
