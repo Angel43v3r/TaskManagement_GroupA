@@ -12,10 +12,12 @@ import TaskCard from '../task-card/TaskCard';
 
 const BoardDndContext = createContext(null);
 
+// Provider component that wraps the board w/ drag-n-drop functionality
 export function BoardDndProvider({ children }) {
   const { tasks, moveTask } = useTasks();
   const [activeTask, setActiveTask] = useState(null);
 
+  // Configures sensors w/ activation constraint to prevent accidental drags
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -24,12 +26,14 @@ export function BoardDndProvider({ children }) {
     })
   );
 
+  // Handler when drag starts, stores active task for overlay
   const handleDragStart = (event) => {
     const { active } = event;
     const task = tasks.find((t) => t.id === active.id);
     setActiveTask(task || null);
   };
 
+  // Handler when drag ends, updates task status if dropped in valid column
   const handleDragEnd = (event) => {
     const { active, over } = event;
     setActiveTask(null);
@@ -47,6 +51,7 @@ export function BoardDndProvider({ children }) {
     }
   };
 
+  // Handler during drag (could be used for hover effects)
   const handleDragOver = (event) => {
     // Currently not needed, but available for future enhancements
   };
@@ -61,6 +66,7 @@ export function BoardDndProvider({ children }) {
         onDragOver={handleDragOver}
       >
         {children}
+        {/* Renders the dragged card outside normal flow */}
         <DragOverlay>
           {activeTask ? <TaskCard task={activeTask} isDragging /> : null}
         </DragOverlay>

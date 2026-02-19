@@ -7,6 +7,8 @@ import {
 } from '@mui/icons-material';
 import StoryPoints from './StoryPoints.jsx';
 import Assignee from './Assignee.jsx';
+import { useDraggable } from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
 
 // Task type constants
 const TASK_TYPES = {
@@ -58,7 +60,17 @@ function getTaskTypeIcon(type) {
   }
 }
 
-export default function TaskCard({ task }) {
+export default function TaskCard({ task, isDragging = false }) {
+  // Sets up draggable w/ task id
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: task.id,
+  });
+
+  // Applies transform styles during drag
+  const style = {
+    transform: CSS.Translate.toString(transform),
+  };
+
   return (
     <Paper
       elevation={0}
