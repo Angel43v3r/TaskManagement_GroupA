@@ -97,5 +97,4 @@ router.get('/developer-only', verifyToken, requireRole('developer'), handler);
 
 router.use('/issues', issuesRouter);
 
-
 export default router;
