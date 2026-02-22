@@ -46,6 +46,4 @@ const requireWorkflowCompliance = async (req, res, next) => {
   }
 };
 
-export {
-  requireWorkflowCompliance,
-};
+export { requireWorkflowCompliance };
