@@ -6,6 +6,7 @@ import {
   updateIssue,
   deleteIssue,
 } from '../controllers/issuesController.js';
+import { requireWorkflowCompliance } from '../middleware/workflow.js';
 
 const router = express.Router();
 
@@ -19,7 +20,7 @@ router.get('/', getAllIssues);
 router.get('/:id', getIssueByID);
 
 // patch
-router.patch('/:id', updateIssue);
+router.patch('/:id', requireWorkflowCompliance, updateIssue);
 
 // delete
 router.delete('/:id', deleteIssue);

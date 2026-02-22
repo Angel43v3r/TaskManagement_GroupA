@@ -39,7 +39,7 @@ export const createIssue = async (req, res) => {
 export const getIssueByID = async (req, res) => {
   try {
     const { id } = req.params;
-    const issue = await Issue.findByPk(id);
+    const issue = req.issue || await Issue.findByPk(id);
     if (!issue) {
       return res.status(404).json({
         success: false,
@@ -73,6 +73,7 @@ export const updateIssue = async (req, res) => {
       'description',
       'reporterId',
       'priority',
+      'status',
       'storyPoints',
       'dueDate',
     ];
