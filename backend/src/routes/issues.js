@@ -6,7 +6,11 @@ import {
   updateIssue,
   deleteIssue,
 } from '../controllers/issuesController.js';
-import { checkIssueView, checkIssueModify, checkIssueDelete } from '../middleware/permissions.js';
+import {
+  checkIssueView,
+  checkIssueModify,
+  checkIssueDelete,
+} from '../middleware/permissions.js';
 
 const router = express.Router();
 

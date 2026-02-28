@@ -52,11 +52,9 @@ export const checkIssueModify = async (req, res, next) => {
         return next();
       }
 
-      return res
-        .status(403)
-        .json({
-          message: `Access denied: only developers and admins can create new issues. Your role: '${user.role}'`,
-        });
+      return res.status(403).json({
+        message: `Access denied: only developers and admins can create new issues. Your role: '${user.role}'`,
+      });
     }
 
     //Updating existing issue
@@ -111,12 +109,10 @@ export const checkIssueDelete = async (req, res, next) => {
       return next();
     }
 
-    return res
-      .status(403)
-      .jsoon({
-        message:
-          'Access Denied: only the admin or reporter of this issue can delete it.',
-      });
+    return res.status(403).jsoon({
+      message:
+        'Access Denied: only the admin or reporter of this issue can delete it.',
+    });
   } catch (err) {
     console.error('Delete permission error: ', err);
     return res
