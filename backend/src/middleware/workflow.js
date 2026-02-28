@@ -34,7 +34,7 @@ const requireWorkflowCompliance = async (req, res, next) => {
     }
 
     // Enforce that 'done' requires an assignee
-    if (newStatus === 'done' && !issue.assignees.length === 0) {
+    if (newStatus === 'done' && issue.assignees.length === 0) {
       return res.status(400).json({
         message: 'Cannot move ticket to DONE without an assignee',
       });
