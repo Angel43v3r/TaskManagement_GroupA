@@ -1,33 +1,33 @@
 import { createContext, useCallback, useEffect, useState } from 'react';
-import { tasksApi } from '../api/tasksApi';
+import { issuesApi } from '../api/issuesApi';
 import { useProject } from './ProjectContext';
 import { useBoard } from './BoardContext';
 import { useContext } from 'react';
 import { arrayMove } from '@dnd-kit/sortable';
 
-const TasksContext = createContext(null);
+const IssuesContext = createContext(null);
 
-export function TasksProvider({ children }) {
+export function IssuesProvider({ children }) {
   const { currentProject } = useProject();
   const { currentBoard } = useBoard();
-  const [tasks, setTasks] = useState([]);
+  const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [updatingIds, setUpdatingIds] = useState(new Set());
 
-  const fetchTasks = useCallback(async () => {
+  const fetchIssues = useCallback(async () => {
     if (!currentProject?.id || !currentBoard?.id) {
-      setTasks([]);
+      setIssues([]);
       return;
     }
 
     setLoading(true);
     try {
-      const { data } = await tasksApi.getAll(
+      const { data } = await issuesApi.getAll(
         currentProject.id,
         currentBoard.id
       );
-      setTasks(data);
+      setIssues(data);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -35,39 +35,39 @@ export function TasksProvider({ children }) {
     }
   }, [currentProject?.id, currentBoard?.id]);
 
-  const updateTask = useCallback(
-    async (taskId, changes) => {
+  const updateIssue = useCallback(
+    async (issueId, changes) => {
       if (!currentProject?.id || !currentBoard?.id) return;
 
-      setUpdatingIds((prev) => new Set([...prev, taskId]));
+      setUpdatingIds((prev) => new Set([...prev, issueId]));
       try {
-        await tasksApi.update(
+        await issuesApi.update(
           currentProject.id,
           currentBoard.id,
-          taskId,
+          issueId,
           changes
         );
-        await fetchTasks();
+        await fetchIssues();
       } catch (err) {
         setError(err.message);
       } finally {
         setUpdatingIds(
-          (prev) => new Set([...prev].filter((id) => id !== taskId))
+          (prev) => new Set([...prev].filter((id) => id !== issueId))
         );
       }
     },
-    [currentProject?.id, currentBoard?.id, fetchTasks]
+    [currentProject?.id, currentBoard?.id, fetchIssues]
   );
 
   // For drag-n-drop status changes w/ optimistic update
-  const moveTask = useCallback(
-    async (taskId, newStatus) => {
-      const previousTasks = [...tasks];
+  const moveIssue = useCallback(
+    async (issueId, newStatus) => {
+      const previousIssues = [...issues];
 
       // Optimistic update. Immediately updates UI
-      setTasks((prev) =>
-        prev.map((task) =>
-          task.id === taskId ? { ...task, status: newStatus } : task
+      setIssues((prev) =>
+        prev.map((issue) =>
+          issue.id === issueId ? { ...issue, status: newStatus } : issue
         )
       );
 
@@ -77,38 +77,38 @@ export function TasksProvider({ children }) {
       }
 
       // Persist to backend
-      setUpdatingIds((prev) => new Set([...prev, taskId]));
+      setUpdatingIds((prev) => new Set([...prev, issueId]));
       try {
-        await tasksApi.update(currentProject.id, currentBoard.id, taskId, {
+        await issuesApi.update(currentProject.id, currentBoard.id, issueId, {
           status: newStatus,
         });
       } catch (err) {
         // Rollback on error
-        setTasks(previousTasks);
+        setIssues(previousIssues);
         setError(err.message);
       } finally {
         setUpdatingIds(
-          (prev) => new Set([...prev].filter((id) => id !== taskId))
+          (prev) => new Set([...prev].filter((id) => id !== issueId))
         );
       }
     },
-    [tasks, currentProject?.id, currentBoard?.id]
+    [issues, currentProject?.id, currentBoard?.id]
   );
 
   // For within-column reordering
-  const reorderTasks = useCallback(
+  const reorderIssues = useCallback(
     async (columnId, oldIndex, newIndex) => {
-      // Gets tasks in this column
-      const columnTasks = tasks.filter((t) => t.status === columnId);
-      const otherTasks = tasks.filter((t) => t.status !== columnId);
-      // Reorders the column tasks
-      const reorderedColumnTasks = arrayMove(columnTasks, oldIndex, newIndex);
+      // Gets issues in this column
+      const columnIssues = issues.filter((t) => t.status === columnId);
+      const otherIssues = issues.filter((t) => t.status !== columnId);
+      // Reorders the column issues
+      const reorderedColumnIssues = arrayMove(columnIssues, oldIndex, newIndex);
       // Combines them back together
-      const newTasks = [...otherTasks, ...reorderedColumnTasks];
+      const newIssues = [...otherIssues, ...reorderedColumnIssues];
       // Stores previous state for rollback
-      const previousTasks = [...tasks];
+      const previousIssues = [...issues];
       // Optimistic update
-      setTasks(newTasks);
+      setIssues(newIssues);
 
       // Skips API call if using mock data
       if (!currentProject?.id || !currentBoard?.id) {
@@ -117,35 +117,35 @@ export function TasksProvider({ children }) {
       // Persist to backend (would need API endpoint for bulk order update)
       try {
         // TODO : Implement API call to persist order
-        // await tasksApi.updateOrder(currentProject.id, currentBoard.id, reorderedColumnTasks);
+        // await issuesApi.updateOrder(currentProject.id, currentBoard.id, reorderedColumnIssues);
       } catch (err) {
-        setTasks(previousTasks);
+        setIssues(previousIssues);
         setError(err.message);
       }
     },
-    [tasks, currentProject?.id, currentBoard?.id]
+    [issues, currentProject?.id, currentBoard?.id]
   );
 
   useEffect(() => {
-    fetchTasks();
-  }, [fetchTasks]);
+    fetchIssues();
+  }, [fetchIssues]);
 
   return (
-    <TasksContext.Provider
+    <IssuesContext.Provider
       value={{
-        tasks,
+        issues,
         loading,
         error,
-        fetchTasks,
-        updateTask,
+        fetchIssues,
+        updateIssue,
         updatingIds,
-        moveTask,
-        reorderTasks,
+        moveIssue,
+        reorderIssues,
       }}
     >
       {children}
-    </TasksContext.Provider>
+    </IssuesContext.Provider>
   );
 }
 
-export const useTasks = () => useContext(TasksContext);
+export const useIssues = () => useContext(IssuesContext);

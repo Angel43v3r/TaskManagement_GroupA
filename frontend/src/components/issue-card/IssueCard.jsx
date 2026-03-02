@@ -10,14 +10,14 @@ import Assignee from './Assignee.jsx';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-// Task type constants
-const TASK_TYPES = {
+// Issue type constants
+const ISSUE_TYPES = {
   EPIC: 'epic',
   STORY: 'story',
-  SUBTASK: 'subtask',
+  SUBISSUE: 'subissue',
 };
 
-// Custom rhombus icon for subtasks
+// Custom rhombus icon for subissues
 function RhombusIcon({ sx }) {
   return (
     <Box
@@ -32,24 +32,24 @@ function RhombusIcon({ sx }) {
   );
 }
 
-// Get icon and color based on task type
-function getTaskTypeIcon(type) {
+// Get icon and color based on issue type
+function getIssueTypeIcon(type) {
   switch (type) {
-    case TASK_TYPES.EPIC:
+    case ISSUE_TYPES.EPIC:
       return (
         <Tooltip title="Epic" arrow>
           <CircleIcon sx={{ fontSize: 14, color: '#E91E8C' }} />
         </Tooltip>
       );
-    case TASK_TYPES.STORY:
+    case ISSUE_TYPES.STORY:
       return (
         <Tooltip title="Story" arrow>
           <PentagonIcon sx={{ fontSize: 14, color: '#00B8D9' }} />
         </Tooltip>
       );
-    case TASK_TYPES.SUBTASK:
+    case ISSUE_TYPES.SUBISSUE:
       return (
-        <Tooltip title="Sub-task" arrow>
+        <Tooltip title="Sub-issue" arrow>
           <Box component="span" sx={{ display: 'inline-flex' }}>
             <RhombusIcon />
           </Box>
@@ -60,8 +60,8 @@ function getTaskTypeIcon(type) {
   }
 }
 
-export default function TaskCard({ task, isDragging = false }) {
-  // Sets up sortable w/ task id for reordering support
+export default function IssueCard({ issue, isDragging = false }) {
+  // Sets up sortable w/ issue id for reordering support
   const {
     attributes,
     listeners,
@@ -70,7 +70,7 @@ export default function TaskCard({ task, isDragging = false }) {
     transition,
     isDragging: isSortableDragging,
   } = useSortable({
-    id: task.id,
+    id: issue.id,
   });
 
   // Applies transform and transition styles during drag
@@ -117,7 +117,7 @@ export default function TaskCard({ task, isDragging = false }) {
           variant="body1"
           sx={{ fontWeight: 500, color: '#333', pr: 1 }}
         >
-          {task.title}
+          {issue.title}
         </Typography>
         <IconButton size="small" sx={{ color: '#ccc', p: 0.25 }}>
           <EditIcon sx={{ fontSize: 16 }} />
@@ -143,10 +143,10 @@ export default function TaskCard({ task, isDragging = false }) {
           textAlign: 'left',
         }}
       >
-        {task.description}
+        {issue.description}
       </Typography>
 
-      {/* Footer: Task ID, Story Points, Assignee */}
+      {/* Footer: Issue ID, Story Points, Assignee */}
       <Box
         sx={{
           display: 'flex',
@@ -154,22 +154,22 @@ export default function TaskCard({ task, isDragging = false }) {
           alignItems: 'center',
         }}
       >
-        {/* Task Type Icon and ID */}
+        {/* Issue Type Icon and ID */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-          {getTaskTypeIcon(task.type)}
+          {getIssueTypeIcon(issue.type)}
           <Typography variant="caption" sx={{ color: '#888' }}>
-            {task.id}
+            {issue.id}
           </Typography>
         </Box>
 
         {/* Story Points, Nesting Icon, and Assignee */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <StoryPoints points={task.storyPoints} taskId={task.id} />
-          {(task.type === TASK_TYPES.EPIC ||
-            task.type === TASK_TYPES.STORY) && (
+          <StoryPoints points={issue.storyPoints} issueId={issue.id} />
+          {(issue.type === ISSUE_TYPES.EPIC ||
+            issue.type === ISSUE_TYPES.STORY) && (
             <NestingIcon sx={{ fontSize: 16, color: '#ccc' }} />
           )}
-          <Assignee name={task.assignee} />
+          <Assignee name={issue.assignee} />
         </Box>
       </Box>
     </Paper>

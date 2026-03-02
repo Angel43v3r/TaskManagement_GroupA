@@ -13,9 +13,9 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { Link, useOutletContext } from 'react-router';
-import TaskCard from '../components/task-card/TaskCard.jsx';
+import IssueCard from '../components/issue-card/IssueCard.jsx';
 import { useBoard } from '../context/BoardContext.jsx';
-import { useTasks } from '../context/TasksContext.jsx';
+import { useIssues } from '../context/IssuesContext.jsx';
 import { useDroppable } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -24,10 +24,10 @@ import {
 import { BoardDndProvider } from '../components/board/BoardDndContext.jsx';
 
 // Column Component
-function Column({ column, tasks }) {
-  const columnTasks = tasks.filter((task) => task.status === column.id);
-  const taskCount = columnTasks.length;
-  const taskIds = columnTasks.map((task) => task.id);
+function Column({ column, issues }) {
+  const columnIssues = issues.filter((issue) => issue.status === column.id);
+  const issueCount = columnIssues.length;
+  const issueIds = columnIssues.map((issue) => issue.id);
 
   // Sets up droppable w/ column id as the drop zone identifier
   const { isOver, setNodeRef } = useDroppable({
@@ -60,7 +60,7 @@ function Column({ column, tasks }) {
             {column.title}
           </Typography>
           <Typography variant="caption" sx={{ color: '#888' }}>
-            {taskCount}
+            {issueCount}
           </Typography>
         </Box>
         <IconButton size="small" sx={{ color: '#999' }}>
@@ -68,7 +68,7 @@ function Column({ column, tasks }) {
         </IconButton>
       </Box>
 
-      {/* Task Cards */}
+      {/* Issue Cards */}
       <Box
         ref={setNodeRef}
         sx={{
@@ -81,9 +81,9 @@ function Column({ column, tasks }) {
           border: isOver ? '2px dashed #2196f3' : '2px dashed transparent',
         }}
       >
-        <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
-          {columnTasks.map((task) => (
-            <TaskCard key={task.id} task={task} />
+        <SortableContext items={issueIds} strategy={verticalListSortingStrategy}>
+          {columnIssues.map((issue) => (
+            <IssueCard key={issue.id} issue={issue} />
           ))}
         </SortableContext>
       </Box>
@@ -93,12 +93,12 @@ function Column({ column, tasks }) {
 
 function BoardContent() {
   const { currentBoard } = useBoard();
-  const { tasks } = useTasks();
+  const { issues } = useIssues();
   const { project } = useOutletContext();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredTasks = tasks.filter((task) =>
-    task.title.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredIssues = issues.filter((issue) =>
+    issue.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const columns = currentBoard?.columns || [
@@ -158,7 +158,7 @@ function BoardContent() {
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <TextField
-              placeholder="Search tasks..."
+              placeholder="Search issues..."
               size="small"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -184,14 +184,14 @@ function BoardContent() {
               startIcon={<AddIcon />}
               sx={{ bgcolor: '#333' }}
             >
-              Create Task
+              Create Issue
             </Button>
           </Box>
         </Box>
 
         <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2 }}>
           {columns.map((column) => (
-            <Column key={column.id} column={column} tasks={filteredTasks} />
+            <Column key={column.id} column={column} issues={filteredIssues} />
           ))}
         </Box>
       </Box>
