@@ -7,7 +7,8 @@ export function mapAttachmentType(mimeType) {
     mimeType.startsWith('text/') ||
     mimeType.includes('officedocument') ||
     mimeType.includes('msword')
-  ) return 'DOCUMENT';
+  )
+    return 'DOCUMENT';
   return 'OTHER';
 }
 
