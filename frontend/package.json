@@ -8,7 +8,11 @@
     "build": "vite build",
     "lint": "eslint src --fix",
     "preview": "vite preview",
-    "test": "TZ=UTC vitest"
+    "test": "vitest",
+    "test:utc": "cross-env TZ=UTC vitest run",
+    "test:ny": "cross-env TZ=America/New_York vitest run",
+    "test:london": "cross-env TZ=Europe/London vitest run",
+    "test:all-tz": "npm run test:utc && npm run test:ny && npm run test:london"
   },
   "dependencies": {
     "@base-ui/react": "^1.2.0",
@@ -34,6 +38,7 @@
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
+    "cross-env": "^10.1.0",
     "eslint": "^9.39.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",

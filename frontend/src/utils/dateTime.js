@@ -5,8 +5,14 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(utc);
 dayjs.extend(relativeTime);
 
+function formatBase(iso, fallback, format) {
+  if (!iso) return fallback;
+  const d = dayjs.utc(iso);
+  return d.isValid() ? d.local().format(format) : fallback;
+}
+
 /**
- * Format an ISO datetime (UTC or with offset) for display in the user's local timezon.
+ * Format an ISO datetime (UTC or with offset) for display in the user's local timezone.
  * Intended for timestamps such as:
  * - comment.createdAt
  * - issue due date
@@ -24,18 +30,15 @@ export function formatDateTime(
   iso,
   { fallback = '-', format = 'MMM D, YYYY h:mm A' } = {}
 ) {
-  if (!iso) return fallback;
-  const d = dayjs(iso);
-  if (!d.isValid()) return fallback;
-  return d.local().format(format);
+  return formatBase(iso, fallback, format);
 }
 
 /**
  * Format a stored due-date instant for display in the viewer's local timezone.
- * This assumes "deadline instatnt" semantics:
+ * This assumes "deadline instant" semantics:
  * - The due date is stored as a UTC instant
  * - Typically derived from end-of-day in the creator's timezone
- * - Dispkayed in the viewer's local timezone
+ * - Displayed in the viewer's local timezone
  *
  * @param {string|null|undefined} iso - ISO string representing a stored UTC deadline.
  * @param {string} [options.fallback='—'] - Text returned if iso is null, undefined, or invalid.
@@ -46,10 +49,7 @@ export function formatDueDate(
   iso,
   { fallback = '-', format = 'MMM D, YYYY' } = {}
 ) {
-  if (!iso) return fallback;
-  const d = dayjs(iso);
-  if (!d.isValid()) return fallback;
-  return d.local().format(format);
+  return formatBase(iso, fallback, format);
 }
 
 /**
@@ -72,8 +72,9 @@ export function formatDueDate(
  */
 export function datePickerValueToDueAtUtcIso(dayjsValue) {
   if (!dayjsValue) return null;
-  const localEndOfDay = dayjs(dayjsValue).endOf('day');
-  return localEndOfDay.utc().toISOString();
+  const d = dayjs(dayjsValue); // Ensures input is wrapped
+  if (!d.isValid()) return null;
+  return d.endOf('day').utc().toISOString();
 }
 
 /**
@@ -83,7 +84,7 @@ export function datePickerValueToDueAtUtcIso(dayjsValue) {
  * - "in 2 days"
  * - "3 hours ago"
  *
- * The inpit ISO string is assumed to represent a UTC instant.
+ * The input ISO string is assumed to represent a UTC instant.
  * The value is converted to the viewer's local timezone before calculating
  * the relative time difference.
  *
@@ -98,14 +99,15 @@ export function datePickerValueToDueAtUtcIso(dayjsValue) {
  */
 export function getRelativeDueTime(iso, { now, withSuffix = true } = {}) {
   if (!iso) return '';
-  const d = dayjs(iso);
+  const d = dayjs.utc(iso);
   if (!d.isValid()) return '';
 
-  if (!now) return d.local().fromNow(!withSuffix);
+  // If no reference 'now' is provided, dayjs handles the comparison to 'now' automatically
+  if (!now) return d.fromNow(!withSuffix);
 
-  const ref = dayjs(now);
-  if (!ref.isValid()) return d.local().fromNow(!withSuffix);
+  const ref = dayjs.utc(now);
+  if (!ref.isValid()) return d.fromNow(!withSuffix);
 
   // dayjs.from(reference, withoutSuffix)
-  return d.local().from(ref.local(), !withSuffix);
+  return d.from(ref, !withSuffix);
 }
