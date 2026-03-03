@@ -68,4 +68,3 @@ Attachment.init(
 );
 
 export default Attachment;
-g
