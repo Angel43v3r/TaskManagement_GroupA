@@ -1,5 +1,10 @@
-import IssueService from '../services/IssueService.js';
 import WorkflowService from '../services/WorkflowService.js';
+
+const getById = async (id) => {
+  return await Issue.findByPk(id, {
+    include: ['assignees'],
+  });
+};
 
 const requireWorkflowCompliance = async (req, res, next) => {
   try {
@@ -12,7 +17,7 @@ const requireWorkflowCompliance = async (req, res, next) => {
       });
     }
 
-    const issue = await IssueService.getById(issueId);
+    const issue = await getById(issueId);
 
     if (!issue) {
       return res.status(404).json({
