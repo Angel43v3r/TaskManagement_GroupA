@@ -61,4 +61,4 @@ export function applyAssociations() {
   Issue.hasMany(Issue, { as: 'subIssues', foreignKey: 'parentIssueId' });
 }
 
-export { Issue, IssueAssignee, User, Attachment };
+export { Issue, IssueAssignee, User, Attachment, Comment };
