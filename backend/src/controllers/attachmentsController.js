@@ -1,8 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import Attachment from '../models/Attachment.js';
-import Issue from '../models/Issue.js';
-import IssueAssignee from '../models/IssueAssignee.js';
+import AttachmentProject from '../models/AttachmentProject.js';
 import {
   mapAttachmentType,
   hasInlinePreview,
@@ -22,50 +21,37 @@ function safeResolve(base, relative) {
   return resolved;
 }
 
-async function canAccessIssue(req, issue) {
-  const userId = req.user?.sub;
-  if (!userId) return false;
-
-  const isAdmin =
-    Array.isArray(req.user?.roles) && req.user.roles.includes('admin');
-  if (isAdmin) return true;
-
-  const isReporter = issue.reporterId === userId;
-  const isAssignee = !!(await IssueAssignee.findOne({
-    where: { issueId: issue.id, userId },
-    attributes: ['issueId'],
-  }));
-
-  return isReporter || isAssignee;
+function hasAuthenticatedUser(req) {
+  return Boolean(req.user?.sub);
 }
 
-async function canAccessAttachment(req, attachment, issue) {
-  const userId = req.user?.sub;
-  if (!userId) return false;
-
-  const isAdmin =
-    Array.isArray(req.user?.roles) && req.user.roles.includes('admin');
-  if (isAdmin) return true;
-
-  const isUploader = attachment.uploadedBy === userId;
-  const canAccessParentIssue = await canAccessIssue(req, issue);
-  return isUploader || canAccessParentIssue;
+function isAdmin(req) {
+  return Array.isArray(req.user?.roles) && req.user.roles.includes('admin');
 }
 
-export async function listIssueAttachments(req, res, next) {
+async function canAccessAttachment(req, attachment) {
+  if (!hasAuthenticatedUser(req)) return false;
+  if (isAdmin(req)) return true;
+  return attachment.uploadedBy === req.user.sub;
+}
+
+export async function listProjectAttachments(req, res, next) {
   try {
-    const { issueId } = req.params;
+    const { projectId } = req.params;
 
-    const issue = await Issue.findByPk(issueId);
-    if (!issue) return res.status(404).json({ message: 'Issue not found' });
+    if (!hasAuthenticatedUser(req)) {
+      return res.status(401).json({ message: 'Login required' });
+    }
 
-    const allowed = await canAccessIssue(req, issue);
-    if (!allowed) return res.status(403).json({ message: 'Forbidden' });
-
-    const attachments = await Attachment.findAll({
-      where: { issueId },
-      order: [['createdAtUTC', 'DESC']],
+    const links = await AttachmentProject.findAll({
+      where: { projectId },
+      include: [{ model: Attachment, as: 'attachment' }],
+      order: [
+        [{ model: Attachment, as: 'attachment' }, 'createdAtUTC', 'DESC'],
+      ],
     });
+
+    const attachments = links.map((link) => link.attachment).filter(Boolean);
 
     res.json({ data: attachments });
   } catch (err) {
@@ -73,12 +59,9 @@ export async function listIssueAttachments(req, res, next) {
   }
 }
 
-export async function uploadIssueAttachment(req, res, next) {
+export async function uploadProjectAttachment(req, res, next) {
   try {
-    const { issueId } = req.params;
-
-    const issue = await Issue.findByPk(issueId);
-    if (!issue) return res.status(404).json({ message: 'Issue not found' });
+    const { projectId } = req.params;
 
     const files = Array.isArray(req.files)
       ? req.files
@@ -98,7 +81,6 @@ export async function uploadIssueAttachment(req, res, next) {
     for (const file of files) {
       const mimeType = file.mimetype;
       const attachment = await Attachment.create({
-        issueId,
         uploadedBy,
         filename: file.originalname,
         mimeType,
@@ -109,8 +91,13 @@ export async function uploadIssueAttachment(req, res, next) {
         url: 'PENDING',
       });
 
+      await AttachmentProject.create({
+        attachmentId: attachment.id,
+        projectId,
+      });
+
       const uploadBase = getUploadBase();
-      const relativeFinal = path.join('issue', issueId, attachment.id);
+      const relativeFinal = path.join('project', projectId, attachment.id);
       const finalDir = safeResolve(uploadBase, path.dirname(relativeFinal));
       await fs.mkdir(finalDir, { recursive: true });
       const finalPath = safeResolve(uploadBase, relativeFinal);
@@ -135,12 +122,17 @@ export async function getAttachmentMetadata(req, res, next) {
     if (!attachment)
       return res.status(404).json({ message: 'Attachment not found' });
 
-    const issue = await Issue.findByPk(attachment.issueId, {
-      attributes: ['id', 'reporterId'],
+    const projectLink = await AttachmentProject.findOne({
+      where: { attachmentId: attachment.id },
+      attributes: ['projectId'],
     });
-    if (!issue) return res.status(404).json({ message: 'Issue not found' });
+    if (!projectLink) {
+      return res
+        .status(404)
+        .json({ message: 'Attachment project link not found' });
+    }
 
-    const allowed = await canAccessAttachment(req, attachment, issue);
+    const allowed = await canAccessAttachment(req, attachment);
     if (!allowed) return res.status(403).json({ message: 'Forbidden' });
 
     res.json({ data: attachment });
@@ -157,12 +149,17 @@ export async function downloadAttachment(req, res, next) {
     if (!attachment)
       return res.status(404).json({ message: 'Attachment not found' });
 
-    const issue = await Issue.findByPk(attachment.issueId, {
-      attributes: ['id', 'reporterId'],
+    const projectLink = await AttachmentProject.findOne({
+      where: { attachmentId: attachment.id },
+      attributes: ['projectId'],
     });
-    if (!issue) return res.status(404).json({ message: 'Issue not found' });
+    if (!projectLink) {
+      return res
+        .status(404)
+        .json({ message: 'Attachment project link not found' });
+    }
 
-    const allowed = await canAccessAttachment(req, attachment, issue);
+    const allowed = await canAccessAttachment(req, attachment);
     if (!allowed) return res.status(403).json({ message: 'Forbidden' });
 
     const uploadBase = getUploadBase();
@@ -192,12 +189,17 @@ export async function deleteAttachment(req, res, next) {
     if (!attachment)
       return res.status(404).json({ message: 'Attachment not found' });
 
-    const issue = await Issue.findByPk(attachment.issueId, {
-      attributes: ['id', 'reporterId'],
+    const projectLink = await AttachmentProject.findOne({
+      where: { attachmentId: attachment.id },
+      attributes: ['projectId'],
     });
-    if (!issue) return res.status(404).json({ message: 'Issue not found' });
+    if (!projectLink) {
+      return res
+        .status(404)
+        .json({ message: 'Attachment project link not found' });
+    }
 
-    const allowed = await canAccessAttachment(req, attachment, issue);
+    const allowed = await canAccessAttachment(req, attachment);
     if (!allowed) return res.status(403).json({ message: 'Forbidden' });
 
     const uploadBase = getUploadBase();

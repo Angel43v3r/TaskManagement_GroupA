@@ -6,6 +6,7 @@ import useAuth from './auth/useAuth.js';
 import AdminDashboard from './dashboard/AdminDashboard.jsx';
 import ClinicianDashboard from './dashboard/ClinicianDashboard.jsx';
 import DeveloperDashboard from './dashboard/DeveloperDashboard.jsx';
+import Attachment from './components/Attachment.jsx';
 
 function App() {
   const { user, isAuthenticated, login, logout, isLoading, roles } = useAuth();
@@ -89,6 +90,8 @@ function App() {
       )}
 
       {isAuthenticated && displayDashboard()}
+
+      <Attachment />
     </div>
   );
 }
