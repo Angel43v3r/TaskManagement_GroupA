@@ -1,4 +1,4 @@
-import TicketService from '../services/TicketService.js';
+import IssueService from '../services/IssueService.js';
 import WorkflowService from '../services/WorkflowService.js';
 
 const requireWorkflowCompliance = async (req, res, next) => {
@@ -12,7 +12,7 @@ const requireWorkflowCompliance = async (req, res, next) => {
       });
     }
 
-    const issue = await TicketService.getById(ticketId);
+    const issue = await IssueService.getById(ticketId);
 
     if (!issue) {
       return res.status(404).json({
