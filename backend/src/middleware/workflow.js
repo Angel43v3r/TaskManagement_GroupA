@@ -1,4 +1,5 @@
 import WorkflowService from '../services/WorkflowService.js';
+import { Issue } from '../models/model.js';
 
 const getById = async (id) => {
   return await Issue.findByPk(id, {
