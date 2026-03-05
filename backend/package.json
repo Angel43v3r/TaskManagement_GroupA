@@ -10,10 +10,12 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "lint": "eslint src --fix"
+    "lint": "eslint src --fix",
+    "seed:dev": "NODE_ENV=development node src/seeds/devSeed.js"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
+    "@faker-js/faker": "^10.3.0",
     "eslint": "^9.39.2",
     "globals": "^17.0.0",
     "nodemon": "^3.1.11",
