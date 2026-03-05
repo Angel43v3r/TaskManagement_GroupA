@@ -63,7 +63,9 @@ export const checkIssueModify = async (req, res, next) => {
     });
 
     if (!issue) {
-      return res.status(404).json({ message: 'Access Denied: Issue not found' });
+      return res
+        .status(404)
+        .json({ message: 'Access Denied: Issue not found' });
     }
 
     const isReporter = issue.reporterId === user.id;
@@ -94,7 +96,9 @@ export const checkIssueDelete = async (req, res, next) => {
   try {
     const issue = await Issue.findByPk(req.params.id);
     if (!issue) {
-      return res.status(404).json({ message: 'Access Denied: Issue not found' });
+      return res
+        .status(404)
+        .json({ message: 'Access Denied: Issue not found' });
     }
 
     const user = req.dbUser;
