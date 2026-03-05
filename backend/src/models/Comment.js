@@ -10,29 +10,23 @@ Comment.init({
     defaultValue: DataTypes.UUIDV4,
   },
   body: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: false,
   },
   issueId: {
     type: DataTypes.UUID,
     allowNull: false,
-    references: { model: 'Issue', key: 'id' },
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   },
   authorId: {
     type: DataTypes.UUID,
     allowNull: false,
-    references: { model: 'User', key: 'id' },
   },
-  createdAt: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-  },
-  updatedAt: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-  },
+},{
+    sequelize,
+    modelName: 'Comment',
+    timestamps: true,
 });
 
 export default Comment;

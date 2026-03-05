@@ -43,17 +43,18 @@ export function applyAssociations() {
 
   // Issue -> Comment
   Issue.hasMany(Comment, {
-    as: 'comments',
+    as: 'comment',
     foreignKey: 'issueId',
+    onDelete: 'CASCADE',
   });
-  Comment.belongsTo(Issue, { as: 'comments', foreignKey: 'issueId' });
+  Comment.belongsTo(Issue, { as: 'issue', foreignKey: 'issueId' });
 
   // user -> Comment (author)
   User.hasMany(Comment, {
-    as: 'commentsPosted',
+    as: 'comment',
     foreignKey: 'authorId',
   });
-  Comment.belongsTo(User, { as: 'commentsPosted', foreignKey: 'authorId' });
+  Comment.belongsTo(User, { as: 'author', foreignKey: 'authorId' });
 
   // parent/subIssues (self reference)
   Issue.belongsTo(Issue, { as: 'parent', foreignKey: 'parentIssueId' });
