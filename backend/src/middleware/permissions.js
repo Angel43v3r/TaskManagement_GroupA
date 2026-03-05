@@ -13,7 +13,7 @@ export const checkIssueView = async (req, res, next) => {
   if (!user) {
     return res
       .status(401)
-      .json({ message: 'Unauthorized: no user session found' });
+      .json({ message: 'Access Denied: no user session found' });
   }
 
   if (user.role === 'admin' || user.role === 'developer') {
@@ -37,7 +37,7 @@ export const checkIssueModify = async (req, res, next) => {
     if (!user) {
       return res
         .status(401)
-        .json({ message: 'Unauthorized: no user session found' });
+        .json({ message: 'Access Denied: no user session found' });
     }
 
     //Admins can always modify
@@ -53,7 +53,7 @@ export const checkIssueModify = async (req, res, next) => {
       }
 
       return res.status(403).json({
-        message: `Access denied: only developers and admins can create new issues. Your role: '${user.role}'`,
+        message: `Access Denied: only developers and admins can create new issues. Your role: '${user.role}'`,
       });
     }
 
@@ -63,7 +63,7 @@ export const checkIssueModify = async (req, res, next) => {
     });
 
     if (!issue) {
-      return res.status(404).json({ message: 'Issue not found' });
+      return res.status(404).json({ message: 'Access Denied: Issue not found' });
     }
 
     const isReporter = issue.reporterId === user.id;
@@ -75,7 +75,7 @@ export const checkIssueModify = async (req, res, next) => {
     }
 
     return res.status(403).json({
-      message: `Access denied: you are not a project member of this issue and cannot modify it. Only the reporter, assigned developers, or admins can modify issues.`,
+      message: `Access Denied: you are not a project member of this issue and cannot modify it. Only the reporter, assigned developers, or admins can modify issues.`,
     });
   } catch (err) {
     console.error('Modify permission error: ', err);
@@ -94,14 +94,14 @@ export const checkIssueDelete = async (req, res, next) => {
   try {
     const issue = await Issue.findByPk(req.params.id);
     if (!issue) {
-      return res.status(404).json({ message: 'Issue not found' });
+      return res.status(404).json({ message: 'Access Denied: Issue not found' });
     }
 
     const user = req.dbUser;
     if (!user) {
       return res
         .status(401)
-        .json({ message: 'Unauthorized: no user session found' });
+        .json({ message: 'Access Denied: no user session found' });
     }
 
     if (user.role === 'admin' || issue.reporterId === user.id) {
