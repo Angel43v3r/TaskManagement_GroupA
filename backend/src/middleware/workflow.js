@@ -3,7 +3,7 @@ import WorkflowService from '../services/WorkflowService.js';
 
 const requireWorkflowCompliance = async (req, res, next) => {
   try {
-    const ticketId = req.params.id;
+    const issueId = req.params.id;
     const { status: newStatus } = req.body;
 
     if (!newStatus) {
@@ -12,7 +12,7 @@ const requireWorkflowCompliance = async (req, res, next) => {
       });
     }
 
-    const issue = await IssueService.getById(ticketId);
+    const issue = await IssueService.getById(issueId);
 
     if (!issue) {
       return res.status(404).json({
