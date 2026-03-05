@@ -119,7 +119,7 @@ describe('Permission Middleware', () => {
         assignees: [{ id: 'u6' }],
       });
 
-      await checkIssueModify(req,res,next)
+      await checkIssueModify(req, res, next);
       expect(res.status).toHaveBeenCalledWith(403);
       expect(next).not.toHaveBeenCalled();
     });
