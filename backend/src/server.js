@@ -2,7 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import { initKeycloak } from './config/keycloak.js';
 import sequelize from './config/db.js';
-import './models/models.js';
+import { applyAssociations } from './models/model.js';
+import './models/model.js';
 import apiRoutes from './routes/api.js';
 import swaggerUi from 'swagger-ui-express';
 import fs from 'fs';
@@ -49,6 +50,8 @@ async function startServer() {
     await initKeycloak();
     await sequelize.authenticate();
     console.log('Database connection established');
+
+    applyAssociations();
 
     if (process.env.NODE_ENV === 'development') {
       await sequelize.sync({ alter: true });

@@ -8,110 +8,108 @@ import PriorityLabel from './PriorityLabel';
 import StoryPointButtonGroup from './StoryPointButtonGroup';
 import TitleField from './TitleField';
 import { Button, Box, Snackbar, Alert } from '@mui/material';
+import PropTypes from 'prop-types';
+import api from '../../api/axios';
 
-function CreateTicketForm() {
+function CreateIssueForm({ onIssueCreation }) {
   const [errorMessage, setErrorMessage] = useState(null);
 
-  const [ticketData, setTicketData] = useState({
+  const [issueData, setIssueData] = useState({
     project: null,
-    issueType: 'Story',
+    type: 'story',
     description: '',
     reporter: null,
-    priority: 'Low',
+    priority: 'low',
     title: '',
     storyPoints: 1,
     dueDate: null,
   });
 
   const handleChange = (field) => (value) => {
-    setTicketData((prev) => ({
+    setIssueData((prev) => ({
       ...prev,
       [field]: value,
     }));
   };
 
-  const handleCreateTicketSubmit = async (e) => {
+  const handleCreateIssueSubmit = async (e) => {
     e.preventDefault();
+
     const payload = {
-      project: ticketData.project?.id ?? null,
-      issueType: ticketData.issueType,
-      description: ticketData.description,
-      dueDate: ticketData.dueDate?.toISOString() ?? null,
-      reporterID: ticketData.reporter?.id ?? null,
-      priority: ticketData.priority,
-      title: ticketData.labels.split(',').map((l) => l.trim()),
-      storyPoints: ticketData.storyPoints,
+      project: issueData.project?.id ?? null,
+      type: issueData.type,
+      description: issueData.description,
+      dueDate: issueData.dueDate?.toISOString() ?? null,
+      reporterId: issueData.reporter?.id ?? null,
+      priority: issueData.priority.toLowerCase(),
+      title: issueData.title,
+      storyPoints: issueData.storyPoints,
     };
     //console.log(payload);
 
     try {
-      await createTicket(payload);
+      await createIssue(payload);
+      onIssueCreation(false);
     } catch (err) {
       //console.error(err);
       setErrorMessage(err.message);
     }
   };
 
-  const createTicket = async (payload) => {
+  const createIssue = async (payload) => {
     try {
-      const res = await fetch('/api/issues', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        setErrorMessage('Ticket creation failed');
-        throw new Error(data.error || 'Ticket creation failed');
-      }
-
-      return res.json();
+      const res = await api.post('/issues', payload);
+      return res.data;
     } catch (err) {
-      setErrorMessage('Network error while creating ticket');
-      throw new Error(err.message || 'Network error while creating ticket');
+      if (err.response) {
+        setErrorMessage(err.response.data?.error || 'Ticket creation failed');
+        throw new Error(err.response.data?.error || 'Ticket creation failed');
+      } else {
+        setErrorMessage('Network error while creating ticket');
+        throw new Error('Network error while creating ticket');
+      }
     }
   };
 
   return (
     <div>
-      <h4>Create New Ticket</h4>
+      <h4>Create New Issue</h4>
       <Box
         component="form"
-        onSubmit={handleCreateTicketSubmit}
+        onSubmit={handleCreateIssueSubmit}
         sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
       >
         <TitleField
-          title={ticketData.labels}
+          title={issueData.title}
           onUpdateTitle={handleChange('title')}
         />
         <ProjectAutocomplete
-          value={ticketData.project}
+          value={issueData.project}
           onChange={handleChange('project')}
         />
         <IssueTypeToggle
-          selectedType={ticketData.issueType}
-          onTypeChange={handleChange('issueType')}
+          selectedType={issueData.type}
+          onTypeChange={handleChange('type')}
         />
         <DescriptionField
-          description={ticketData.description}
+          description={issueData.description}
           onUpdateDescription={handleChange('description')}
         />
         <DueDatePicker
-          dueDate={ticketData.dueDate}
+          dueDate={issueData.dueDate}
           onDueDateUpdate={handleChange('dueDate')}
         />
         <UserAutocomplete
-          value={ticketData.reporter}
-          onChange={handleChange('reporter')}
+          userValue={issueData.reporter}
+          onUserValueChange={handleChange('reporter')}
         />
         <PriorityLabel
-          priority={ticketData.priority}
+          priority={issueData.priority}
           onUpdatePriority={handleChange('priority')}
         />
         Story Points
         <StoryPointButtonGroup
-          points={ticketData.storyPoints}
+          points={issueData.storyPoints}
           onUpdatePoints={handleChange('storyPoints')}
         />
         <Button variant="outlined" component="label">
@@ -124,12 +122,19 @@ function CreateTicketForm() {
         >
           <Alert severity="error">{errorMessage}</Alert>
         </Snackbar>
-        <Button type="submit" variant="contained" disabled={!ticketData.title}>
-          Create Ticket
+        <Button type="submit" variant="contained" disabled={!issueData.title}>
+          Create Issue
+        </Button>
+        <Button type="button" onClick={() => onIssueCreation(false)}>
+          Cancel
         </Button>
       </Box>
     </div>
   );
 }
 
-export default CreateTicketForm;
+CreateIssueForm.propTypes = {
+  onIssueCreation: PropTypes.func.isRequired,
+};
+
+export default CreateIssueForm;
