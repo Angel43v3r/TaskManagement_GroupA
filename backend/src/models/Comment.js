@@ -16,13 +16,14 @@ Comment.init({
   issueId: {
     type: DataTypes.UUID,
     allowNull: false,
-    references: { model: 'Issues', key: 'id' },
+    references: { model: 'Issue', key: 'id' },
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   },
   authorId: {
     type: DataTypes.UUID,
     allowNull: false,
+    references: { model: 'User', key: 'id' },
   },
   createdAt: {
     type: DataTypes.DATE,
