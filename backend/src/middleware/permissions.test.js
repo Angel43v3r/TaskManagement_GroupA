@@ -106,7 +106,7 @@ describe('Permission Middleware', () => {
       //creating issue
       req.params = {};
       await checkIssueModify(req, res, next);
-      expect(res.status).toHaveBeenCalled(403);
+      expect(res.status).toHaveBeenCalledWith(403);
       expect(next).not.toHaveBeenCalled();
     });
 
@@ -118,6 +118,10 @@ describe('Permission Middleware', () => {
         reporterId: 'testUser2',
         assignees: [{ id: 'u6' }],
       });
+
+      await checkIssueModify(req,res,next)
+      expect(res.status).toHaveBeenCalledWith(403);
+      expect(next).not.toHaveBeenCalled();
     });
 
     it('return 401 if no user in session', async () => {

@@ -109,7 +109,7 @@ export const checkIssueDelete = async (req, res, next) => {
       return next();
     }
 
-    return res.status(403).jsoon({
+    return res.status(403).json({
       message:
         'Access Denied: only the admin or reporter of this issue can delete it.',
     });
