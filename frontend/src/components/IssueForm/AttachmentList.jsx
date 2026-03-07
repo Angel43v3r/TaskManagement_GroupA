@@ -8,10 +8,7 @@ import {
   ListItemText,
   IconButton,
 } from '@mui/material';
-import {
-  AttachFile,
-  Download,
-} from '@mui/icons-material';
+import { AttachFile, Download } from '@mui/icons-material';
 
 function AttachmentList({ ticketId }) {
   const [attachments, setAttachments] = useState([]);
@@ -38,7 +35,7 @@ function AttachmentList({ ticketId }) {
               <ListItemIcon>
                 <AttachFile />
               </ListItemIcon>
-              <ListItemText 
+              <ListItemText
                 primary={file.filename}
                 secondary={`${(file.size / 1024).toFixed(0)} KB`}
               />
