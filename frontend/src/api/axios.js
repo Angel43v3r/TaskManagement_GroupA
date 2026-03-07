@@ -2,7 +2,9 @@ import axios from 'axios';
 import keycloak from '../keycloak';
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_BACKEND_URL
+    ? `${import.meta.env.VITE_BACKEND_URL}/api`
+    : 'http://localhost:5050/api',
 });
 
 api.interceptors.request.use(async (config) => {
