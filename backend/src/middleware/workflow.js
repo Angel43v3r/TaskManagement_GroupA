@@ -1,9 +1,15 @@
-import TicketService from '../services/TicketService.js';
 import WorkflowService from '../services/WorkflowService.js';
+import { Issue } from '../models/model.js';
+
+const getById = async (id) => {
+  return await Issue.findByPk(id, {
+    include: ['assignees'],
+  });
+};
 
 const requireWorkflowCompliance = async (req, res, next) => {
   try {
-    const ticketId = req.params.id;
+    const issueId = req.params.id;
     const { status: newStatus } = req.body;
 
     if (!newStatus) {
@@ -12,7 +18,7 @@ const requireWorkflowCompliance = async (req, res, next) => {
       });
     }
 
-    const issue = await TicketService.getById(ticketId);
+    const issue = await getById(issueId);
 
     if (!issue) {
       return res.status(404).json({
