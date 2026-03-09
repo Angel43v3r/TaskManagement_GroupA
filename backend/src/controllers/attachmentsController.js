@@ -2,6 +2,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import Attachment from '../models/Attachment.js';
 import AttachmentProject from '../models/AttachmentProject.js';
+import sequelize from '../config/db.js';
 import {
   mapAttachmentType,
   hasInlinePreview,
@@ -60,14 +61,27 @@ export async function listProjectAttachments(req, res, next) {
 }
 
 export async function uploadProjectAttachment(req, res, next) {
+  const files = Array.isArray(req.files)
+    ? req.files
+    : req.file
+      ? [req.file]
+      : [];
+
+  const cleanupPaths = async (paths) => {
+    await Promise.all(
+      paths.map(async (filePath) => {
+        if (!filePath) return;
+        await fs.unlink(filePath).catch(() => {});
+      })
+    );
+  };
+
+  let transaction;
+  const movedFinalPaths = [];
+  const pendingTempPaths = files.map((file) => file.path).filter(Boolean);
+
   try {
     const { projectId } = req.params;
-
-    const files = Array.isArray(req.files)
-      ? req.files
-      : req.file
-        ? [req.file]
-        : [];
     if (files.length === 0) {
       return res
         .status(400)
@@ -77,24 +91,32 @@ export async function uploadProjectAttachment(req, res, next) {
     const uploadedBy = req.user?.sub;
     if (!uploadedBy) return res.status(401).json({ message: 'Login required' });
 
+    transaction = await sequelize.transaction();
+
     const created = [];
     for (const file of files) {
       const mimeType = file.mimetype;
-      const attachment = await Attachment.create({
-        uploadedBy,
-        filename: file.originalname,
-        mimeType,
-        size: file.size,
-        type: mapAttachmentType(mimeType),
-        hasInlinePreview: hasInlinePreview(mimeType),
-        createdAtUTC: new Date(),
-        url: 'PENDING',
-      });
+      const attachment = await Attachment.create(
+        {
+          uploadedBy,
+          filename: file.originalname,
+          mimeType,
+          size: file.size,
+          type: mapAttachmentType(mimeType),
+          hasInlinePreview: hasInlinePreview(mimeType),
+          createdAtUTC: new Date(),
+          url: 'PENDING',
+        },
+        { transaction }
+      );
 
-      await AttachmentProject.create({
-        attachmentId: attachment.id,
-        projectId,
-      });
+      await AttachmentProject.create(
+        {
+          attachmentId: attachment.id,
+          projectId,
+        },
+        { transaction }
+      );
 
       const uploadBase = getUploadBase();
       const relativeFinal = path.join('project', projectId, attachment.id);
@@ -102,14 +124,24 @@ export async function uploadProjectAttachment(req, res, next) {
       await fs.mkdir(finalDir, { recursive: true });
       const finalPath = safeResolve(uploadBase, relativeFinal);
       await fs.rename(file.path, finalPath);
+      movedFinalPaths.push(finalPath);
+
+      const tempIndex = pendingTempPaths.indexOf(file.path);
+      if (tempIndex >= 0) pendingTempPaths.splice(tempIndex, 1);
 
       attachment.url = relativeFinal.replaceAll('\\', '/');
-      await attachment.save();
+      await attachment.save({ transaction });
       created.push(attachment);
     }
 
+    await transaction.commit();
     res.status(201).json({ data: created });
   } catch (err) {
+    if (transaction) {
+      await transaction.rollback().catch(() => {});
+    }
+    await cleanupPaths(movedFinalPaths);
+    await cleanupPaths(pendingTempPaths);
     next(err);
   }
 }
