@@ -2,6 +2,7 @@ import User from './User.js';
 import Issue from './Issue.js';
 import IssueAssignee from './IssueAssignee.js';
 import Attachment from './Attachment.js';
+import AttachmentProject from './AttachmentProject.js';
 
 // =============== Associations ===============
 
@@ -10,13 +11,16 @@ export function applyAssociations() {
   Issue.belongsTo(User, { as: 'reporter', foreignKey: 'reporterId' });
   User.hasMany(Issue, { as: 'reportedIssues', foreignKey: 'reporterId' });
 
-  // Issue -> Attachment
-  Issue.hasMany(Attachment, {
-    as: 'attachments',
-    foreignKey: 'issueId',
+  // Attachment -> Project links
+  Attachment.hasMany(AttachmentProject, {
+    as: 'projectLinks',
+    foreignKey: 'attachmentId',
     onDelete: 'CASCADE',
   });
-  Attachment.belongsTo(Issue, { as: 'issue', foreignKey: 'issueId' });
+  AttachmentProject.belongsTo(Attachment, {
+    as: 'attachment',
+    foreignKey: 'attachmentId',
+  });
 
   // User -> Attachment (uploader)
   User.hasMany(Attachment, {
@@ -45,4 +49,4 @@ export function applyAssociations() {
   Issue.hasMany(Issue, { as: 'subIssues', foreignKey: 'parentIssueId' });
 }
 
-export { Issue, IssueAssignee, User, Attachment };
+export { Issue, IssueAssignee, User, Attachment, AttachmentProject };
