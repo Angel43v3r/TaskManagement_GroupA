@@ -5,7 +5,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  closestCorners,
+  rectIntersection,
 } from '@dnd-kit/core';
 import { useIssues } from '../../context/IssuesContext.jsx';
 import IssueCard from '../issue-card/IssueCard.jsx';
@@ -43,35 +43,49 @@ export function BoardDndProvider({ children }) {
     const activeId = active.id;
     const overId = over.id;
 
-    // Finds the dragged issue
-    const activeIssue = issues.find((t) => t.id === activeId);
+    if (activeId === overId) return;
+
+    const activeIssue = issues.find((i) => i.id === activeId);
     if (!activeIssue) return;
 
-    // Checks if dropped over a column or another issue
-    const overIssue = issues.find((t) => t.id === overId);
+    const overIssue = issues.find((i) => i.id === overId);
 
     if (overIssue) {
       // Dropped over another issue
       if (activeIssue.status === overIssue.status) {
-        // Same column: reorder
+        // Same column: reorder within column
         const columnIssues = issues.filter(
-          (t) => t.status === activeIssue.status
+          (i) => i.status === activeIssue.status
         );
-        const oldIndex = columnIssues.findIndex((t) => t.id === activeId);
-        const newIndex = columnIssues.findIndex((t) => t.id === overId);
+        const oldIndex = columnIssues.findIndex((i) => i.id === activeId);
+        const newIndex = columnIssues.findIndex((i) => i.id === overId);
 
         if (oldIndex !== newIndex) {
           reorderIssues(activeIssue.status, oldIndex, newIndex);
         }
       } else {
-        // Different column: move to new status
-        moveIssue(activeId, overIssue.status);
+        // Different column: move and insert at specific position
+        const targetColumnIssues = issues.filter(
+          (i) => i.status === overIssue.status
+        );
+        const targetIndex = targetColumnIssues.findIndex(
+          (i) => i.id === overId
+        );
+
+        moveIssue(activeId, overIssue.status, targetIndex);
       }
     } else {
-      // Dropped over a column (empty area)
-      const newStatus = overId;
-      if (activeIssue.status !== newStatus) {
-        moveIssue(activeId, newStatus);
+      // Dropped over empty column area (overId is column id)
+      const isColumnId = [
+        'backlog',
+        'in_progress',
+        'reviewed',
+        'done',
+        'todo',
+        'in_review',
+      ].includes(overId);
+      if (isColumnId && activeIssue.status !== overId) {
+        moveIssue(activeId, overId);
       }
     }
   };
@@ -80,7 +94,7 @@ export function BoardDndProvider({ children }) {
     <BoardDndContext.Provider value={{ activeIssue }}>
       <DndContext
         sensors={sensors}
-        collisionDetection={closestCorners}
+        collisionDetection={rectIntersection}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >

@@ -60,15 +60,40 @@ export function IssuesProvider({ children }) {
 
   // For drag-n-drop status changes w/ optimistic update
   const moveIssue = useCallback(
-    async (issueId, newStatus) => {
+    async (issueId, newStatus, targetIndex = null) => {
       const previousIssues = [...issues];
 
-      // Optimistic update. Immediately updates UI
-      setIssues((prev) =>
-        prev.map((issue) =>
-          issue.id === issueId ? { ...issue, status: newStatus } : issue
-        )
-      );
+      // Optimistic update with position support
+      setIssues((prev) => {
+        // Remove issue from current position
+        const issueToMove = prev.find((i) => i.id === issueId);
+        if (!issueToMove) return prev;
+
+        const withoutIssue = prev.filter((i) => i.id !== issueId);
+        const updatedIssue = { ...issueToMove, status: newStatus };
+
+        if (targetIndex !== null) {
+          // Insert at specific position in target column
+          const targetColumnIssues = withoutIssue.filter(
+            (i) => i.status === newStatus
+          );
+          const otherIssues = withoutIssue.filter(
+            (i) => i.status !== newStatus
+          );
+
+          // Insert at targetIndex
+          const newColumnIssues = [
+            ...targetColumnIssues.slice(0, targetIndex),
+            updatedIssue,
+            ...targetColumnIssues.slice(targetIndex),
+          ];
+
+          return [...otherIssues, ...newColumnIssues];
+        } else {
+          // Append to end of column
+          return [...withoutIssue, updatedIssue];
+        }
+      });
 
       // Skips API call if using mock data
       if (!currentProject?.id || !currentBoard?.id) {
@@ -130,6 +155,7 @@ export function IssuesProvider({ children }) {
     <IssuesContext.Provider
       value={{
         issues,
+        setIssues,
         loading,
         error,
         fetchIssues,
