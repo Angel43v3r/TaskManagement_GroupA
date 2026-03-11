@@ -9,6 +9,7 @@ import StoryPoints from './StoryPoints.jsx';
 import Assignee from './Assignee.jsx';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useIssue } from '../../context/IssuesContext.jsx';
 
 // Issue type constants
 const ISSUE_TYPES = {
@@ -61,6 +62,36 @@ function getIssueTypeIcon(type) {
 }
 
 export default function IssueCard({ issue, isDragging = false }) {
+  const { updateIssue } = useIssues();
+
+  let assigneeName = issue.assignee;
+  if (
+    !assigneeName &&
+    Array.isArray(issue.assignees) &&
+    issue.assignees.length > 0
+  ) {
+    const a = issue.assignees[0];
+    assigneeName =
+      a.fullName ?? `${a.firstName ?? ''} ${a.lastName ?? ''}`.trim();
+  }
+
+  const assigneeId =
+    Array.isArray(issue.assignees) && issue.assignees.length > 0
+      ? issue.assignees[0].id
+      : null;
+
+  const handleStoryPoints = (e) => {
+    const points = parseInt(e.target.value, 10);
+    if (!isNaN(points) && points >= 0) {
+      updateIssue(issue.id, { storyPoints: points });
+    }
+  };
+
+  const handleAssign = (user) => {
+    const assigneeIds = user ? [user.id] : [];
+    updateIssue(issue.id, { assigneeIds });
+  };
+
   // Sets up sortable w/ issue id for reordering support
   const {
     attributes,
@@ -158,18 +189,26 @@ export default function IssueCard({ issue, isDragging = false }) {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
           {getIssueTypeIcon(issue.type)}
           <Typography variant="caption" sx={{ color: '#888' }}>
-            {issue.id}
+            {issue.title}
           </Typography>
         </Box>
 
         {/* Story Points, Nesting Icon, and Assignee */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <StoryPoints points={issue.storyPoints} issueId={issue.id} />
+          <StoryPoints
+            points={issue.storyPoints}
+            onChange={handleStoryPoints}
+            issueId={issue.id}
+          />
           {(issue.type === ISSUE_TYPES.EPIC ||
             issue.type === ISSUE_TYPES.STORY) && (
             <NestingIcon sx={{ fontSize: 16, color: '#ccc' }} />
           )}
-          <Assignee name={issue.assignee} />
+          <Assignee
+            selectedId={assigneeId}
+            name={assigneeName}
+            onSelect={handleAssign}
+          />
         </Box>
       </Box>
     </Paper>
