@@ -78,9 +78,7 @@ export function IssuesProvider({ children }) {
       // Persist to backend
       setUpdatingIds((prev) => new Set([...prev, issueId]));
       try {
-        await issuesApi.update(currentProject.id, currentBoard.id, issueId, {
-          status: newStatus,
-        });
+        await issuesApi.update(issueId, { status: newStatus });
       } catch (err) {
         // Rollback on error
         setIssues(previousIssues);
@@ -130,7 +128,16 @@ export function IssuesProvider({ children }) {
 
   return (
     <IssuesContext.Provider
-      value={{ issues, loading, error, fetchIssues, updateIssue, updatingIds, moveIssue, reorderIssues }}
+      value={{
+        issues,
+        loading,
+        error,
+        fetchIssues,
+        updateIssue,
+        updatingIds,
+        moveIssue,
+        reorderIssues,
+      }}
     >
       {children}
     </IssuesContext.Provider>

@@ -9,7 +9,7 @@ import StoryPoints from './StoryPoints.jsx';
 import Assignee from './Assignee.jsx';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { useIssue } from '../../context/IssuesContext.jsx';
+import { useIssues } from '../../context/IssuesContext.jsx';
 
 // Issue type constants
 const ISSUE_TYPES = {

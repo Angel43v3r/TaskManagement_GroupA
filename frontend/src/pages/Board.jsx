@@ -81,7 +81,10 @@ function Column({ column, issues }) {
           border: isOver ? '2px dashed #2196f3' : '2px dashed transparent',
         }}
       >
-        <SortableContext items={issueIds} strategy={verticalListSortingStrategy}>
+        <SortableContext
+          items={issueIds}
+          strategy={verticalListSortingStrategy}
+        >
           {columnIssues.map((issue) => (
             <IssueCard key={issue.id} issue={issue} />
           ))}

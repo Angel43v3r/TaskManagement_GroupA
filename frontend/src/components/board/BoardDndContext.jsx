@@ -54,7 +54,9 @@ export function BoardDndProvider({ children }) {
       // Dropped over another issue
       if (activeIssue.status === overIssue.status) {
         // Same column: reorder
-        const columnIssues = issues.filter((t) => t.status === activeIssue.status);
+        const columnIssues = issues.filter(
+          (t) => t.status === activeIssue.status
+        );
         const oldIndex = columnIssues.findIndex((t) => t.id === activeId);
         const newIndex = columnIssues.findIndex((t) => t.id === overId);
 
