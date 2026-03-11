@@ -51,9 +51,8 @@ export function BoardDndProvider({ children }) {
     const overIssue = issues.find((i) => i.id === overId);
 
     if (overIssue) {
-      // Dropped over another issue
       if (activeIssue.status === overIssue.status) {
-        // Same column: reorder within column
+        // Same column: reorder
         const columnIssues = issues.filter(
           (i) => i.status === activeIssue.status
         );
@@ -64,18 +63,28 @@ export function BoardDndProvider({ children }) {
           reorderIssues(activeIssue.status, oldIndex, newIndex);
         }
       } else {
-        // Different column: move and insert at specific position
+        // Different column: determine insert position based on pointer location
         const targetColumnIssues = issues.filter(
           (i) => i.status === overIssue.status
         );
-        const targetIndex = targetColumnIssues.findIndex(
-          (i) => i.id === overId
-        );
+        let targetIndex = targetColumnIssues.findIndex((i) => i.id === overId);
+
+        // Check if dropping below the center of the target card
+        if (over.rect) {
+          const overCenterY = over.rect.top + over.rect.height / 2;
+          const pointerY =
+            active.rect.current.translated?.top +
+            active.rect.current.translated?.height / 2;
+
+          if (pointerY > overCenterY) {
+            targetIndex += 1; // Insert after the target card
+          }
+        }
 
         moveIssue(activeId, overIssue.status, targetIndex);
       }
     } else {
-      // Dropped over empty column area (overId is column id)
+      // Dropped over empty column area
       const isColumnId = [
         'backlog',
         'in_progress',
