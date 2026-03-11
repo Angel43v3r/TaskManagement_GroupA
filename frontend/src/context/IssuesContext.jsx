@@ -23,11 +23,8 @@ export function IssuesProvider({ children }) {
 
     setLoading(true);
     try {
-      const { data } = await issuesApi.getAll(
-        currentProject.id,
-        currentBoard.id
-      );
-      setIssues(data);
+      const { data } = await issuesApi.getAll(currentBoard.id);
+      setIssues(data.issues);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -41,13 +38,15 @@ export function IssuesProvider({ children }) {
 
       setUpdatingIds((prev) => new Set([...prev, issueId]));
       try {
-        await issuesApi.update(
-          currentProject.id,
-          currentBoard.id,
-          issueId,
-          changes
-        );
-        await fetchIssues();
+        const { data } = await issuesApi.update(issueId, changes);
+
+        if (data && data.issue) {
+          setIssues((prev) =>
+            prev.map((t) => (t.id === issueId ? data.issue : t))
+          );
+        } else {
+          await fetchIssues();
+        }
       } catch (err) {
         setError(err.message);
       } finally {
@@ -116,8 +115,7 @@ export function IssuesProvider({ children }) {
       }
       // Persist to backend (would need API endpoint for bulk order update)
       try {
-        // TODO : Implement API call to persist order
-        // await issuesApi.updateOrder(currentProject.id, currentBoard.id, reorderedColumnIssues);
+        // ...
       } catch (err) {
         setIssues(previousIssues);
         setError(err.message);
@@ -132,16 +130,7 @@ export function IssuesProvider({ children }) {
 
   return (
     <IssuesContext.Provider
-      value={{
-        issues,
-        loading,
-        error,
-        fetchIssues,
-        updateIssue,
-        updatingIds,
-        moveIssue,
-        reorderIssues,
-      }}
+      value={{ issues, loading, error, fetchIssues, updateIssue, updatingIds, moveIssue, reorderIssues }}
     >
       {children}
     </IssuesContext.Provider>
