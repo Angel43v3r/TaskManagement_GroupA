@@ -41,12 +41,15 @@ const router = express.Router();
  *       201:
  *         description: Comment created successfully
  *       400:
- *         description: Invalid request body
+ *         description: Comment body is required
  *       401:
  *         description: Unauthorized
- *       404:
+ *       403:
  *         description: Issue not found
+ *       500:
+ *         description: Server error
  */
+
 router.post('/issues/:id/comments', verifyToken, createComment);
 
 /**
@@ -70,8 +73,10 @@ router.post('/issues/:id/comments', verifyToken, createComment);
  *         description: List of comments
  *       401:
  *         description: Unauthorized
- *       404:
+ *       403:
  *         description: Issue not found
+ *       500:
+ *         description: Server error
  */
 router.get('/issues/:id/comments', verifyToken, getCommentByIssue);
 
@@ -104,12 +109,14 @@ router.get('/issues/:id/comments', verifyToken, getCommentByIssue);
  *     responses:
  *       200:
  *         description: Comment updated
+ *       400:
+ *         description: Comment body is required
  *       401:
- *         description: Unauthorized
- *       403:
  *         description: Not allowed to edit this comment
  *       404:
  *         description: Comment not found
+ *       500:
+ *         description: Server error
  */
 router.patch('/comments/:id', verifyToken, updateComment);
 
@@ -133,12 +140,13 @@ router.patch('/comments/:id', verifyToken, updateComment);
  *       200:
  *         description: Comment deleted
  *       401:
- *         description: Unauthorized
- *       403:
  *         description: Not allowed to delete this comment
  *       404:
  *         description: Comment not found
+ *       500:
+ *         description: Server error
  */
+
 router.delete('/comments/:id', verifyToken, removeComment);
 
 export default router;

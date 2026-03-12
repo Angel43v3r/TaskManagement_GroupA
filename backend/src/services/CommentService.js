@@ -2,10 +2,16 @@ import { Comment, Issue } from '../models/model.js';
 
 const addComment = async (issueId, body, currentUser) => {
   const issue = await Issue.findByPk(issueId);
-  if (!issue) throw new Error('Issue not found');
+  if (!issue) {
+    const error403 = new Error('Issue not found');
+    error403.status = 403;
+    throw error403;
+  }
 
   if (!body || !body.trim()) {
-    throw new Error('Comment body is required');
+    const error400 = new Error('Comment body is required');
+    error400.status = 400;
+    throw error400;
   }
 
   const comment = await Comment.create({
@@ -19,17 +25,25 @@ const addComment = async (issueId, body, currentUser) => {
 
 const editComment = async (commentId, body, currentUser) => {
   const comment = await Comment.findByPk(commentId);
-  if (!comment) throw new Error('Comment not found');
+  if (!comment) {
+    const error404 = new Error('Comment not found');
+    error404.status = 404;
+    throw error404;
+  }
 
   if (!body || !body.trim()) {
-    throw new Error('Comment body is required');
+    const error400 = new Error('Comment body is required');
+    error400.status = 400;
+    throw error400;
   }
 
   if (
     comment.authorId !== currentUser.sub &&
     !currentUser.roles.includes('admin')
   ) {
-    throw new Error('You are not allowed to edit this comment');
+    const error401 = new Error('You are not allowed to edit this comment');
+    error401.status = 401;
+    throw error401;
   }
   comment.body = body.trim();
   await comment.save();
@@ -40,12 +54,18 @@ const editComment = async (commentId, body, currentUser) => {
 const deleteComment = async (commentId, currentUser) => {
   const comment = await Comment.findByPk(commentId);
 
-  if (!comment) throw new Error('Comment not found');
+  if (!comment) {
+    const error404 = new Error('Comment not found');
+    error404.status = 404;
+    throw error404;
+  }
   if (
     comment.authorId !== currentUser.sub &&
     !currentUser.roles.includes('admin')
   ) {
-    throw new Error('You are not allowed to edit this comment');
+    const error401 = new Error('You are not allowed to edit this comment');
+    error401.status = 401;
+    throw error401;
   }
 
   await comment.destroy();
@@ -55,7 +75,11 @@ const deleteComment = async (commentId, currentUser) => {
 
 const listByIssue = async (issueId) => {
   const issue = await Issue.findByPk(issueId);
-  if (!issue) throw new Error('Issue not found');
+  if (!issue) {
+    const error403 = new Error('Issue not found');
+    error403.status = 403;
+    throw error403;
+  }
 
   const comments = await Comment.findAll({
     where: { issueId },

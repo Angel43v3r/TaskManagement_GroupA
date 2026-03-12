@@ -18,7 +18,8 @@ export const createComment = async (req, res) => {
     });
   } catch (err) {
     console.error('Error leaving comment', err);
-    res.status(500).json({
+    const status = err.status || 500;
+    res.status(status).json({
       success: false,
       error: err.message,
     });
@@ -35,7 +36,8 @@ export const updateComment = async (req, res, next) => {
     res.status(200).json(comment);
   } catch (err) {
     console.error('Error updating comment', err);
-    res.status(500).json({
+    const status = err.status || 500;
+    res.status(status).json({
       success: false,
       error: err.message,
     });
@@ -51,7 +53,8 @@ export const removeComment = async (req, res, next) => {
     res.status(200).json(result);
   } catch (err) {
     console.error('Error updating comment', err);
-    res.status(500).json({
+    const status = err.status || 500;
+    res.status(status).json({
       success: false,
       error: err.message,
     });
@@ -65,7 +68,8 @@ export const getCommentByIssue = async (req, res, next) => {
     res.status(200).json(comments);
   } catch (err) {
     console.error('Error getting comments', err);
-    res.status(500).json({
+    const status = err.status || 500;
+    res.status(status).json({
       success: false,
       error: err.message,
     });
