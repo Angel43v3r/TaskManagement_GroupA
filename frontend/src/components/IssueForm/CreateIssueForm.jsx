@@ -169,12 +169,7 @@ function CreateIssueForm({
             onUpdatePoints={handleChange('storyPoints')}
           />
         </Box>
-
-        <Button variant="outlined" component="label">
-          Add Attachment
-          <input type="file" hidden multiple />
-        </Button>
-
+        
         <Snackbar
           open={Boolean(errorMessage) || Boolean(successMessage)}
           autoHideDuration={6000}
