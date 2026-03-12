@@ -10,6 +10,8 @@ import TitleField from './TitleField';
 import { Button, Box, Snackbar, Alert } from '@mui/material';
 import PropTypes from 'prop-types';
 import api from '../../api/axios';
+import dayjs from 'dayjs';
+
 
 function CreateIssueForm({
   mode = 'create', // 'create' or 'edit'
@@ -44,7 +46,7 @@ function CreateIssueForm({
         priority: (initialData.priority || 'low').toLowerCase(),
         title: initialData.title || '',
         storyPoints: initialData.storyPoints || 1,
-        dueDate: initialData.dueDate ? new Date(initialData.dueDate) : null,
+        dueDate: initialData.dueDate ? dayjs(initialData.dueDate) : null,
       });
     }
   }, [initialData]);
