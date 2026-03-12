@@ -12,7 +12,6 @@ import PropTypes from 'prop-types';
 import api from '../../api/axios';
 import dayjs from 'dayjs';
 
-
 function CreateIssueForm({
   mode = 'create', // 'create' or 'edit'
   issueId = null,
