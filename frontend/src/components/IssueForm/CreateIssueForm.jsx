@@ -169,7 +169,7 @@ function CreateIssueForm({
             onUpdatePoints={handleChange('storyPoints')}
           />
         </Box>
-        
+
         <Snackbar
           open={Boolean(errorMessage) || Boolean(successMessage)}
           autoHideDuration={6000}
