@@ -17,7 +17,6 @@
 3. [Testing Instructions](#testing-instructions)
 4. [CI/CD Instructions](#cicd-instructions)
 5. [Contributing](#contributing)
-6. [License](#license)
 
 ## Project Overview
 
