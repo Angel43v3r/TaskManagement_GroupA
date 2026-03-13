@@ -85,7 +85,7 @@ In the root folder, run:
 npm run docker:up
 ```
 
-### 5. Run the Project
+### 5. Access the Project
 
 Access the front end at `http://localhost:3000`
 
