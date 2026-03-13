@@ -113,18 +113,20 @@ This project uses GitHub Actions for CI/CD to automate testing and checks code q
 
 ### Lint & Format
 
-This focus on code style and quality.
+This focuses on code style and quality.
 
-- **Prettier** - Checks if code is formatted correctly.
+- **Prettier** - Automatically checks if code is formatted correctly.
   - If this check fails, go to your terminal and run:
   ```
   npx prettier --write <file-name>
   ```
-- **ESLint** - Checks for bugs or bad coding pattern.
+- **ESLint** - Automatically checks for bugs or bad coding pattern.
 
 ### Unit Test
 
-- **Vitest** - Runs the full Vitest test suite on the project to check the app logic.
+This focuses on verifying the correctness of the app logic.
+
+- **Vitest** - Automatically runs the full Vitest test suite on the project to check the app logic.
 
 You can view the status of the workflow by:
 
