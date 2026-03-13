@@ -29,14 +29,14 @@ The prototype will include both frontend and backend components, authentication 
 
 ### Identity and Access Management
 
-- We use **Keycloak** to manage our authentication, authorization, and role-based access for a secure user management.
-  - **Admin Role** - Dedicated Admin dashboard with full access with user and system management.
-  - **VR Developer Role** - Access to Developer dashboard, issue, project, board, and comments.
-  - **Clinician Role** - Access to Clinician dashboard, create project, and comments.
+We use **Keycloak** to manage our authentication, authorization, and role-based access for a secure user management.
+- **Admin Role** - Dedicated Admin dashboard with full access with user and system management.
+- **VR Developer Role** - Access to Developer dashboard, issue, project, board, and comments.
+- **Clinician Role** - Access to Clinician dashboard, create project, and comments.
 
 ### API Architecture
 
-- We implemented OpenAPI (Swagger) specification for seamless coordination between the frontend and backend.
+We implemented OpenAPI (Swagger) specification for seamless coordination between the frontend and backend.
 
 ![Project Routes](https://github.com/mbokros1/TaskManagement_GroupA/tree/main/Screenshots/Routes.png)
 
