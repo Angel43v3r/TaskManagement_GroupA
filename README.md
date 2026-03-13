@@ -130,7 +130,7 @@ This focuses on verifying the correctness of the app logic.
 
 You can view the status of the workflow by:
 
-1. Login GitHub
+1. Login to GitHub
 2. Navigate to the Project Repository
 3. Click the **Actions** tab
 
