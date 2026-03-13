@@ -129,7 +129,7 @@ You can view the status of the workflow by:
 
 ### Team Yellow
 
-**Developer:**
+**Developers:**
 
 - Armando Valenzuela
 - Eric Norman
