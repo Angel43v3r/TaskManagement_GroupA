@@ -88,7 +88,9 @@ npm run docker:up
 ### 5. Run the Project
 
 Access the front end at `http://localhost:3000`
+
 Access backend at `http://localhost:5050`
+
 Access keycloak at `http://localhost:8080`
 
 ## Testing Instructions
