@@ -121,7 +121,10 @@ This focus on code style and quality.
   npx prettier --write <file-name>
   ```
 - **ESLint** - Checks for bugs or bad coding pattern.
-- **Unit Test** - Runs the full Vitest test suite on the project to check the app logic.
+
+### Unit Test
+
+- **Vitest** - Runs the full Vitest test suite on the project to check the app logic.
 
 You can view the status of the workflow by:
 
