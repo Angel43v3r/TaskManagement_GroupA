@@ -1,0 +1,113 @@
+# Jiro
+
+### CSB430 - Software Design & Implementation
+
+#### Riipen Project - UnVRap
+#### Stakeholder: Navun Razdan
+
+#### North Seattle College (Winter 2026)
+
+## Table of Contents
+
+1. [Project Overview](#project-overview)
+2. [How to Use](#how-to-use)
+3. [Testing Instructions](#testing-instructions)
+4. [CI/CD Instructions](#cicd-instructions)
+5. [Contributing](#contributing)
+6. [License](#license)
+
+## Project Overview
+Developed a collaborative Task Management prototype for UnVRap, a B2B VR SaaS company specializing in phobia treatment. 
+
+The system will streamline coordination between UnVRap’s VR, Clinician, and Admin teams by allowing users to create projects, assign issues, set deadlines, leave comments, track progress, and share resources in a user-friendly interface. 
+
+The prototype will include both frontend and backend components, authentication and authorization, and role-based views for different user types, aiming to improve team efficiency and communication through a centralized, accessible tool.
+
+## How to Use
+### 1. Prerequisites
+
+Make sure you have the following installed:
+
+- **Node.js**: Version **20.20.0** or higher.
+
+    - This project use Node.js to run the local development server and manage dependencies. You can download from [Node.js](https://nodejs.org/en).
+    - Verify: `node -v`
+
+- **Node Package Manager (npm)**: Version **11.6.2** or higher (comes bundled with Node.js).
+    - This project use npm to manage the libraries for the project, this comes pre-bundled with Node.js. 
+    - Verify: `npm -v`
+
+- **Docker Desktop**
+    - This project uses docker to containerize the database and backend services. You can download from [Docker](https://www.docker.com/products/docker-desktop/).
+    - Verify: `docker --version`
+- **Visual Studio Code**
+    - You can use any editor, VS Code is recommended for this project. You can download from [VSC](https://code.visualstudio.com/).
+
+### 2. Clone the Repository
+In the folder you want to save your project in, run:
+```
+git clone https://github.com/mbokros1/TaskManagement_GroupA.git
+```
+
+### 3. Install Dependencies
+In the root folder, run:
+```
+npm install
+```
+
+### 4. Run Docker Desktop
+In the root folder, run:
+```
+npm run docker:up
+```
+
+### 5. Run the Project
+Access the front end at `http://localhost:3000`
+Access backend at `http://localhost:5050`
+Access keycloak at `http://localhost:8080`
+
+## Testing Instructions
+This project use Vitest for unit test. To test all, in the root folder, run:
+```
+npm test
+```
+OR
+```
+npx vitest
+```
+
+*To test backend and frontend seperately, navigate to the folder (backend/frontend) then run the same commands above.*
+
+## CI/CD Instructions
+This project uses GitHub Actions for CI/CD to automate testing and checks code quality. The workflow configuration is located at `.github/workflows/ci.yml`. 
+
+### Lint & Format
+This focus on code style and quality. 
+- **Prettier** - Checks if code is formatted correctly. 
+    - If this check fails, go to your terminal and run:
+    ```
+    npx prettier --write <file-name>
+    ```
+- **ESLint** - Checks for bugs or bad coding pattern.
+- **Unit Test** - Runs the full Vitest test suite on the project to check the app logic.
+
+You can view the status of the workflow by:
+1. Login GitHub
+2. Navigate to the Project Repository
+3. Click the **Actions** tab
+
+## Contributing
+**Project Manager:** Mihaly Bokros
+
+#### Team Red
+**Tech Lead:** Alice Li
+**Developers:**
+- Jovy Ann Nelson
+- Yuria Loo
+- Zane Schaffer
+
+#### Team Yellow
+**Developer:**
+- Armando Valenzuela
+- Eric Norman
+- Psy Cisneros
