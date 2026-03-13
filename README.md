@@ -38,6 +38,7 @@ The prototype will include both frontend and backend components, authentication 
 
 ### API Architecture
 - We implemented OpenAPI (Swagger) specification for seamless coordination between the frontend and backend.
+
 ![Project Routes](https://github.com/mbokros1/TaskManagement_GroupA/tree/main/Screenshots/Routes.png)
 
 
@@ -58,6 +59,7 @@ Make sure you have the following installed:
 - **Docker Desktop**
   - This project uses docker to containerize the database and backend services. You can download from [Docker](https://www.docker.com/products/docker-desktop/).
   - Verify: `docker --version`
+
 - **Visual Studio Code**
   - You can use any editor, VS Code is recommended for this project. You can download from [VSC](https://code.visualstudio.com/).
 
