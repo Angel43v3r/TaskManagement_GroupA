@@ -101,6 +101,7 @@ You can view the status of the workflow by:
 
 #### Team Red
 **Tech Lead:** Alice Li
+
 **Developers:**
 - Jovy Ann Nelson
 - Yuria Loo
