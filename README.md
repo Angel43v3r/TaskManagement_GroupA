@@ -117,7 +117,7 @@ You can view the status of the workflow by:
 
 **Project Manager:** Mihaly Bokros
 
-#### Team Red
+#### _Team Red_
 
 **Tech Lead:** Alice Li
 
@@ -127,7 +127,7 @@ You can view the status of the workflow by:
 - Yuria Loo
 - Zane Schaffer
 
-#### Team Yellow
+#### _Team Yellow_
 
 **Developer:**
 
