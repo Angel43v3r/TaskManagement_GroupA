@@ -1,4 +1,5 @@
 # Jiro
+![Jiro](https://github.com/mbokros1/TaskManagement_GroupA/tree/main/Screenshots/SiteMap.png)
 
 ### CSB430 - Software Design & Implementation
 
@@ -7,6 +8,7 @@
 #### Stakeholder: Navun Razdan
 
 #### North Seattle College (Winter 2026)
+
 
 ## Table of Contents
 
@@ -17,6 +19,7 @@
 5. [Contributing](#contributing)
 6. [License](#license)
 
+
 ## Project Overview
 
 Developed a collaborative Task Management prototype for UnVRap, a B2B VR SaaS company specializing in phobia treatment.
@@ -24,6 +27,19 @@ Developed a collaborative Task Management prototype for UnVRap, a B2B VR SaaS co
 The system will streamline coordination between UnVRap’s VR, Clinician, and Admin teams by allowing users to create projects, assign issues, set deadlines, leave comments, track progress, and share resources in a user-friendly interface.
 
 The prototype will include both frontend and backend components, authentication and authorization, and role-based views for different user types, aiming to improve team efficiency and communication through a centralized, accessible tool.
+
+
+### Identity and Access Management
+- We use **Keycloak** to manage our authentication, authorization, and role-based access for a secure user management.
+    - **Admin Role** - Dedicated Admin dashboard with full access with user and system management.
+    - **VR Developer Role** - Access to Developer dashboard, issue, project, board, and comments.
+    - **Clinician Role** - Access to Clinician dashboard, create project, and comments.
+
+
+### API Architecture
+- We implemented OpenAPI (Swagger) specification for seamless coordination between the frontend and backend.
+![Project Routes](https://github.com/mbokros1/TaskManagement_GroupA/tree/main/Screenshots/Routes.png)
+
 
 ## How to Use
 
@@ -91,9 +107,11 @@ npx vitest
 
 _To test backend and frontend seperately, navigate to the folder (backend/frontend) then run the same commands above._
 
+
 ## CI/CD Instructions
 
 This project uses GitHub Actions for CI/CD to automate testing and checks code quality. The workflow configuration is located at `.github/workflows/ci.yml`.
+
 
 ### Lint & Format
 
@@ -113,9 +131,11 @@ You can view the status of the workflow by:
 2. Navigate to the Project Repository
 3. Click the **Actions** tab
 
+
 ## Contributing
 
 **Project Manager:** Mihaly Bokros
+
 
 ### Team Red
 
@@ -126,6 +146,7 @@ You can view the status of the workflow by:
 - Jovy Ann Nelson
 - Yuria Loo
 - Zane Schaffer
+
 
 ### Team Yellow
 
