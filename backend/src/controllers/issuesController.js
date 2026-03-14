@@ -54,15 +54,17 @@ export const getIssueByID = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const issue = req.issue || (await Issue.findByPk(id, {
-      include: [
-        {
-          model: User,
-          as: 'assignees',
-          attributes: ['id', 'firstName', 'lastName', 'email'],
-        },
-      ],
-    }));
+    const issue =
+      req.issue ||
+      (await Issue.findByPk(id, {
+        include: [
+          {
+            model: User,
+            as: 'assignees',
+            attributes: ['id', 'firstName', 'lastName', 'email'],
+          },
+        ],
+      }));
 
     if (!issue) {
       return res.status(404).json({
