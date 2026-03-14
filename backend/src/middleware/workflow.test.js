@@ -21,6 +21,7 @@ describe('requireWorkflowCompliance middleware', () => {
     vi.clearAllMocks();
   });
 
+
   it('calls next() when transition is valid', async () => {
     const req = {
       params: { id: 1 },
@@ -46,6 +47,7 @@ describe('requireWorkflowCompliance middleware', () => {
     expect(Issue.findByPk).toHaveBeenCalled();
     expect(next).toHaveBeenCalled();
   });
+
 
   it('returns 400 when transition is invalid', async () => {
     const req = {
@@ -77,6 +79,7 @@ describe('requireWorkflowCompliance middleware', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
+
   it('returns 404 when the issue is not found', async () => {
     const req = {
       params: { id: 999 },
@@ -101,6 +104,68 @@ describe('requireWorkflowCompliance middleware', () => {
 
     expect(res.json).toHaveBeenCalledWith({
       message: 'Issue not found',
+    });
+
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('returns 400 when there is no new status', async () => {
+    const req = {
+      params: { id: 999 },
+      body: { status: '' },
+    };
+
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    };
+
+    const next = vi.fn();
+
+    Issue.findByPk.mockResolvedValue({
+      status: 'in_progress',
+      assignees: [{ id: 1 }],
+    });
+
+    WorkflowService.validateTransition.mockReturnValue(true);
+
+    await requireWorkflowCompliance(req, res, next);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'New status is required',
+    });
+});
+
+  it('returns 400 when the issue has no assignee', async () => {
+    const req = {
+      params: { id: 1 },
+      body: { status: 'done' },
+    };
+
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    };
+
+    const next = vi.fn();
+
+    Issue.findByPk.mockResolvedValue({
+      status: 'reviewed',
+      assignees: [],
+    });
+
+    WorkflowService.validateTransition.mockReturnValue(true);
+
+    await requireWorkflowCompliance(req, res, next);
+
+    expect(Issue.findByPk).toHaveBeenCalledWith(1, {
+      include: ['assignees'],
+    });
+
+    expect(res.status).toHaveBeenCalledWith(400);
+
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'Cannot move ticket to DONE without an assignee',
     });
 
     expect(next).not.toHaveBeenCalled();
