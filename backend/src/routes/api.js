@@ -6,6 +6,7 @@ import attachmentsRouter from './attachments.js';
 import { syncUser } from '../middleware/syncUser.js';
 import userRoutes from './users.js';
 import commentsRouter from './comments.js';
+import boardRoutes from './boards.js';
 
 const router = express.Router();
 
@@ -130,5 +131,7 @@ router.get('/developer-only', requireRole('developer'), handler);
 router.use('/issues', issuesRouter);
 router.use('/', attachmentsRouter);
 router.use('/comments', commentsRouter);
+
+router.use('/boards', boardRoutes);
 
 export default router;

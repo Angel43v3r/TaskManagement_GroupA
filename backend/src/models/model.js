@@ -3,6 +3,9 @@ import Issue from './Issue.js';
 import Comment from './Comment.js';
 import IssueAssignee from './IssueAssignee.js';
 import Attachment from './Attachment.js';
+import Board from './Board.js';
+import IssueBoard from './IssueBoard.js';
+import AttachmentProject from './AttachmentProject.js';
 
 // =============== Associations ===============
 
@@ -11,13 +14,16 @@ export function applyAssociations() {
   Issue.belongsTo(User, { as: 'reporter', foreignKey: 'reporterId' });
   User.hasMany(Issue, { as: 'reportedIssues', foreignKey: 'reporterId' });
 
-  // Issue -> Attachment
-  Issue.hasMany(Attachment, {
-    as: 'attachments',
-    foreignKey: 'issueId',
+  // Attachment -> Project links
+  Attachment.hasMany(AttachmentProject, {
+    as: 'projectLinks',
+    foreignKey: 'attachmentId',
     onDelete: 'CASCADE',
   });
-  Attachment.belongsTo(Issue, { as: 'issue', foreignKey: 'issueId' });
+  AttachmentProject.belongsTo(Attachment, {
+    as: 'attachment',
+    foreignKey: 'attachmentId',
+  });
 
   // User -> Attachment (uploader)
   User.hasMany(Attachment, {
@@ -59,6 +65,29 @@ export function applyAssociations() {
   // parent/subIssues (self reference)
   Issue.belongsTo(Issue, { as: 'parent', foreignKey: 'parentIssueId' });
   Issue.hasMany(Issue, { as: 'subIssues', foreignKey: 'parentIssueId' });
+
+  Issue.belongsToMany(Board, {
+    through: IssueBoard,
+    as: 'boards',
+    foreignKey: 'issueId',
+    otherKey: 'boardId',
+  });
+
+  Board.belongsToMany(Issue, {
+    through: IssueBoard,
+    as: 'issues',
+    foreignKey: 'boardId',
+    otherKey: 'issueId',
+  });
 }
 
-export { Issue, IssueAssignee, User, Attachment, Comment };
+export {
+  Issue,
+  IssueAssignee,
+  User,
+  Attachment,
+  AttachmentProject,
+  Board,
+  IssueBoard,
+  Comment,
+};
