@@ -26,7 +26,7 @@ export const createComment = async (req, res) => {
   }
 };
 
-export const updateComment = async (req, res, next) => {
+export const updateComment = async (req, res) => {
   try {
     const commentId = req.params.id;
     const { body } = req.body;
@@ -44,7 +44,7 @@ export const updateComment = async (req, res, next) => {
   }
 };
 
-export const removeComment = async (req, res, next) => {
+export const removeComment = async (req, res) => {
   try {
     const commentId = req.params.id;
     const currentUser = req.user;
@@ -61,7 +61,7 @@ export const removeComment = async (req, res, next) => {
   }
 };
 
-export const getCommentByIssue = async (req, res, next) => {
+export const getCommentByIssue = async (req, res) => {
   try {
     const issueId = req.params.id;
     const comments = await listByIssue(issueId);

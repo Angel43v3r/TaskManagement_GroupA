@@ -12,7 +12,6 @@ import {
   checkIssueModify,
   checkIssueDelete,
 } from '../middleware/permissions.js';
-import { requireWorkflowCompliance } from '../middleware/workflow.js';
 
 const router = express.Router();
 
