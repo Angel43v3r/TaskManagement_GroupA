@@ -1,0 +1,108 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { Issue } from '../models/model.js';
+
+vi.mock('../models/model.js', () => ({
+  Issue: {
+    findByPk: vi.fn(),
+  },
+}));
+
+vi.mock('../services/WorkflowService.js', () => ({
+  default: {
+    validateTransition: vi.fn(),
+  },
+}));
+
+import { requireWorkflowCompliance } from './workflow.js';
+import WorkflowService from '../services/WorkflowService.js';
+
+describe('requireWorkflowCompliance middleware', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('calls next() when transition is valid', async () => {
+    const req = {
+      params: { id: 1 },
+      body: { status: 'in_progress' },
+    };
+
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    };
+
+    const next = vi.fn();
+
+    Issue.findByPk.mockResolvedValue({
+      status: 'todo',
+      assignees: [{ id: 1 }],
+    });
+
+    WorkflowService.validateTransition.mockReturnValue(true);
+
+    await requireWorkflowCompliance(req, res, next);
+
+    expect(Issue.findByPk).toHaveBeenCalled();
+    expect(next).toHaveBeenCalled();
+  });
+
+  it('returns 400 when transition is invalid', async () => {
+    const req = {
+      params: { id: 1 },
+      body: { status: 'done' },
+    };
+
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    };
+
+    const next = vi.fn();
+
+    Issue.findByPk.mockResolvedValue({
+      status: 'todo',
+      assignees: [{ id: 1 }],
+    });
+
+    WorkflowService.validateTransition.mockReturnValue(false);
+
+    await requireWorkflowCompliance(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'Invalid status transition from todo to done',
+    });
+
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('returns 404 when the issue is not found', async () => {
+    const req = {
+      params: { id: 999 },
+      body: { status: 'in_progress' },
+    };
+
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    };
+
+    const next = vi.fn();
+
+    Issue.findByPk.mockResolvedValue(null);
+
+    await requireWorkflowCompliance(req, res, next);
+    expect(Issue.findByPk).toHaveBeenCalledWith(999, {
+      include: ['assignees'],
+    });
+
+    expect(res.status).toHaveBeenCalledWith(404);
+
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'Ticket not found',
+    });
+
+    expect(next).not.toHaveBeenCalled();
+  });
+});
