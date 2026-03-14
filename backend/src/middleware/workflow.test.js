@@ -100,7 +100,7 @@ describe('requireWorkflowCompliance middleware', () => {
     expect(res.status).toHaveBeenCalledWith(404);
 
     expect(res.json).toHaveBeenCalledWith({
-      message: 'Ticket not found',
+      message: 'Issue not found',
     });
 
     expect(next).not.toHaveBeenCalled();
