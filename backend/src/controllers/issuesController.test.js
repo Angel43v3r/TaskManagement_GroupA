@@ -280,4 +280,69 @@ describe('issuesController', () => {
 
     expect(res.status).toHaveBeenCalledWith(200);
   });
+
+  it('getAllIssues filters by type, priority, status, reporterId, and search', async () => {
+    const req = {
+      query: {
+        type: 'bug',
+        priority: 'high',
+        status: 'open',
+        reporterId: 1,
+        search: 'crash',
+      },
+      params: {},
+    };
+    const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
+
+    Issue.findAll.mockResolvedValue([{ id: 1 }]);
+
+    await getAllIssues(req, res);
+
+    expect(Issue.findAll).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          type: 'bug',
+          priority: 'high',
+          status: 'open',
+          reporterId: 1,
+        }),
+      })
+    );
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  it('getAllIssues filters by boardId when provided', async () => {
+    const req = {
+      query: {},
+      params: { boardId: 5 },
+    };
+    const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
+
+    Issue.findAll.mockResolvedValue([]);
+
+    await getAllIssues(req, res);
+
+    expect(Issue.findAll).toHaveBeenCalledWith(
+      expect.objectContaining({
+        include: expect.arrayContaining([
+          expect.objectContaining({ where: { id: 5 } }),
+        ]),
+      })
+    );
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  it('getAllIssues returns 500 on error', async () => {
+    const req = { query: {}, params: {} };
+    const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
+
+    Issue.findAll.mockRejectedValue(new Error('DB error'));
+
+    await getAllIssues(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ success: false })
+    );
+  });
 });
