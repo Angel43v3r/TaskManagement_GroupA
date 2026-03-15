@@ -57,7 +57,6 @@ describe('issuesController', () => {
     expect(res.status).toHaveBeenCalledWith(201);
   });
 
-  
   it('createIssue creates issue without boards', async () => {
     const req = {
       body: {
@@ -84,6 +83,20 @@ describe('issuesController', () => {
 
     expect(fakeIssue.setBoards).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(201);
+  });
+
+  it('createIssue returns 500 on error', async () => {
+    const req = { body: { title: 'Test' } };
+    const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
+
+    Issue.create.mockRejectedValue(new Error('DB error'));
+
+    await createIssue(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ success: false })
+    );
   });
 
   it('getIssueByID returns issue when found', async () => {
@@ -125,6 +138,17 @@ describe('issuesController', () => {
     await getIssueByID(req, res);
 
     expect(res.status).toHaveBeenCalledWith(404);
+  });
+
+  it('getIssueByID returns 500 on error', async () => {
+    const req = { params: { id: 1 } };
+    const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
+
+    Issue.findByPk.mockRejectedValue(new Error('DB error'));
+
+    await getIssueByID(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
   });
 
   it('updateIssue updates an existing issue', async () => {
@@ -173,6 +197,20 @@ describe('issuesController', () => {
     expect(res.status).toHaveBeenCalledWith(404);
   });
 
+  it('updateIssue returns 500 on error', async () => {
+    const req = { params: { id: 1 }, body: {} };
+    const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
+
+    Issue.findByPk.mockRejectedValue(new Error('DB error'));
+
+    await updateIssue(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ success: false })
+    );
+  });
+
   it('deleteIssue deletes an issue', async () => {
     const req = {
       params: { id: 1 },
@@ -194,6 +232,31 @@ describe('issuesController', () => {
     expect(fakeIssue.destroy).toHaveBeenCalled();
 
     expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  it('deleteIssue returns 404 when issue not found', async () => {
+    const req = { params: { id: 99 } };
+    const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
+
+    Issue.findByPk.mockResolvedValue(null);
+
+    await deleteIssue(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ success: false })
+    );
+  });
+
+  it('deleteIssue returns 500 on error', async () => {
+    const req = { params: { id: 1 } };
+    const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
+
+    Issue.findByPk.mockRejectedValue(new Error('DB error'));
+
+    await deleteIssue(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
   });
 
   it('getAllIssues returns list of issues', async () => {
