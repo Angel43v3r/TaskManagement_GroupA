@@ -21,7 +21,6 @@ describe('requireWorkflowCompliance middleware', () => {
     vi.clearAllMocks();
   });
 
-
   it('calls next() when transition is valid', async () => {
     const req = {
       params: { id: 1 },
@@ -47,7 +46,6 @@ describe('requireWorkflowCompliance middleware', () => {
     expect(Issue.findByPk).toHaveBeenCalled();
     expect(next).toHaveBeenCalled();
   });
-
 
   it('returns 400 when transition is invalid', async () => {
     const req = {
@@ -78,7 +76,6 @@ describe('requireWorkflowCompliance middleware', () => {
 
     expect(next).not.toHaveBeenCalled();
   });
-
 
   it('returns 404 when the issue is not found', async () => {
     const req = {
@@ -134,7 +131,7 @@ describe('requireWorkflowCompliance middleware', () => {
     expect(res.json).toHaveBeenCalledWith({
       message: 'New status is required',
     });
-});
+  });
 
   it('returns 400 when the issue has no assignee', async () => {
     const req = {

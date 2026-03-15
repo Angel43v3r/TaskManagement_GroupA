@@ -21,13 +21,11 @@ import {
 import { Issue } from '../models/model.js';
 
 describe('issuesController', () => {
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('createIssue creates a new issue', async () => {
-
     const req = {
       body: {
         title: 'Test Issue',
@@ -62,9 +60,7 @@ describe('issuesController', () => {
     expect(res.status).toHaveBeenCalledWith(201);
   });
 
-
   it('getIssueByID returns issue when found', async () => {
-
     const req = {
       params: { id: 1 },
     };
@@ -86,11 +82,9 @@ describe('issuesController', () => {
       success: true,
       issue: fakeIssue,
     });
-
   });
 
   it('getIssueByID returns 404 when issue not found', async () => {
-
     const req = {
       params: { id: 99 },
     };
@@ -105,11 +99,9 @@ describe('issuesController', () => {
     await getIssueByID(req, res);
 
     expect(res.status).toHaveBeenCalledWith(404);
-
   });
 
   it('updateIssue updates an existing issue', async () => {
-
     const req = {
       params: { id: 1 },
       body: { status: 'done' },
@@ -135,11 +127,9 @@ describe('issuesController', () => {
     expect(fakeIssue.update).toHaveBeenCalled();
 
     expect(res.status).toHaveBeenCalledWith(200);
-
   });
 
   it('updateIssue returns 404 when updating missing issue', async () => {
-
     const req = {
       params: { id: 99 },
       body: {},
@@ -155,11 +145,9 @@ describe('issuesController', () => {
     await updateIssue(req, res);
 
     expect(res.status).toHaveBeenCalledWith(404);
-
   });
 
   it('deleteIssue deletes an issue', async () => {
-
     const req = {
       params: { id: 1 },
     };
@@ -180,11 +168,9 @@ describe('issuesController', () => {
     expect(fakeIssue.destroy).toHaveBeenCalled();
 
     expect(res.status).toHaveBeenCalledWith(200);
-
   });
 
   it('getAllIssues returns list of issues', async () => {
-
     const req = {
       query: {},
       params: {},
@@ -195,10 +181,7 @@ describe('issuesController', () => {
       json: vi.fn(),
     };
 
-    const fakeIssues = [
-      { id: 1 },
-      { id: 2 },
-    ];
+    const fakeIssues = [{ id: 1 }, { id: 2 }];
 
     Issue.findAll.mockResolvedValue(fakeIssues);
 
@@ -207,7 +190,5 @@ describe('issuesController', () => {
     expect(Issue.findAll).toHaveBeenCalled();
 
     expect(res.status).toHaveBeenCalledWith(200);
-
   });
-
 });

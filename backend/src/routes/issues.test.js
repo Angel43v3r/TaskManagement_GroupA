@@ -40,29 +40,21 @@ vi.mock('../middleware/permissions.js', () => ({
   checkIssueDelete: vi.fn((req, res, next) => next()),
 }));
 
-
-
 const app = express();
 app.use(express.json());
 app.use('/issues', issuesRouter);
-
-
 
 describe('Issues Routes', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-
   it('POST /issues calls createIssue', async () => {
-    const res = await request(app)
-      .post('/issues')
-      .send({ title: 'New issue' });
+    const res = await request(app).post('/issues').send({ title: 'New issue' });
 
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
   });
-
 
   it('GET /issues returns list of issues', async () => {
     const res = await request(app).get('/issues');
@@ -71,7 +63,6 @@ describe('Issues Routes', () => {
     expect(res.body.success).toBe(true);
   });
 
-
   it('GET /issues/:id returns an issue', async () => {
     const res = await request(app).get('/issues/1');
 
@@ -79,16 +70,12 @@ describe('Issues Routes', () => {
     expect(res.body.issue.id).toBe(1);
   });
 
-
   it('PATCH /issues/:id updates an issue', async () => {
-    const res = await request(app)
-      .patch('/issues/1')
-      .send({ status: 'done' });
+    const res = await request(app).patch('/issues/1').send({ status: 'done' });
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
   });
-
 
   it('DELETE /issues/:id deletes an issue', async () => {
     const res = await request(app).delete('/issues/1');
