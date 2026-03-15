@@ -52,11 +52,37 @@ describe('issuesController', () => {
     await createIssue(req, res);
 
     expect(Issue.create).toHaveBeenCalled();
-
     expect(fakeIssue.setBoards).toHaveBeenCalledWith([1]);
-
     expect(fakeIssue.setAssignees).toHaveBeenCalledWith([2]);
+    expect(res.status).toHaveBeenCalledWith(201);
+  });
 
+  
+  it('createIssue creates issue without boards', async () => {
+    const req = {
+      body: {
+        title: 'Test issue',
+        reporterId: 1,
+        boardIds: [],
+        assigneeIds: [2],
+      },
+    };
+
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    };
+
+    const fakeIssue = {
+      id: 1,
+      setBoards: vi.fn(),
+    };
+
+    Issue.create.mockResolvedValue({});
+
+    await createIssue(req, res);
+
+    expect(fakeIssue.setBoards).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(201);
   });
 
