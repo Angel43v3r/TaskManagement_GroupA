@@ -22,7 +22,7 @@ const requireWorkflowCompliance = async (req, res, next) => {
 
     if (!issue) {
       return res.status(404).json({
-        message: 'Ticket not found',
+        message: 'Issue not found',
       });
     }
 
