@@ -74,7 +74,7 @@ git clone https://github.com/mbokros1/TaskManagement_GroupA.git
 In the root folder, run:
 
 ```
-npm install
+npm run install:all
 ```
 
 ### 4. Run Docker Desktop
@@ -149,11 +149,11 @@ This focuses on verifying the correctness of the app logic.
 - Jovy Ann Nelson
 - Yuria Loo
 - Zane Schaffer
+  Eric Norman
 
-### Team Yellow
+### Team Rainbow
 
 **Developers:**
 
 - Armando Valenzuela
-- Eric Norman
 - Psy Cisneros
