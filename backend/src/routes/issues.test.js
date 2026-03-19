@@ -40,6 +40,19 @@ vi.mock('../middleware/permissions.js', () => ({
   checkIssueDelete: vi.fn((req, res, next) => next()),
 }));
 
+// Mock comments controller
+
+vi.mock('../controllers/commentsController.js', () => ({
+  createComment: vi.fn((req, res) =>
+    res.status(201).json({ success: true })
+  ),
+  getCommentByIssue: vi.fn((req, res) =>
+    res.status(200).json({ success: true, comments: [] })
+  ),
+}));
+
+
+
 const app = express();
 app.use(express.json());
 app.use('/issues', issuesRouter);
