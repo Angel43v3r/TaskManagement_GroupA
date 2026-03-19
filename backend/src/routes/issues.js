@@ -99,7 +99,7 @@ router.post('/:id/comments', verifyToken, createComment);
  *         description: List of comments
  *       401:
  *         description: Unauthorized
- *       403:
+ *       404:
  *         description: Issue not found
  *       500:
  *         description: Server error
