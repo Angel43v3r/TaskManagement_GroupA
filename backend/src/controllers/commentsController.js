@@ -52,7 +52,7 @@ export const removeComment = async (req, res) => {
     const result = await deleteComment(commentId, currentUser);
     res.status(200).json(result);
   } catch (err) {
-    console.error('Error updating comment', err);
+    console.error('Error deleting comment', err);
     const status = err.status || 500;
     res.status(status).json({
       success: false,

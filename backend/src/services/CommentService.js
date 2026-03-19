@@ -3,9 +3,9 @@ import { Comment, Issue } from '../models/model.js';
 const addComment = async (issueId, body, currentUser) => {
   const issue = await Issue.findByPk(issueId);
   if (!issue) {
-    const error403 = new Error('Issue not found');
-    error403.status = 403;
-    throw error403;
+    const error404 = new Error('Issue not found');
+    error404.status = 404;
+    throw error404;
   }
 
   if (!body || !body.trim()) {
