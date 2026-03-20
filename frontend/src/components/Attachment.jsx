@@ -421,7 +421,8 @@ function Attachment({ projectId: propProjectId }) {
         fullWidth
       >
         <DialogTitle>
-          {formatAttachmentName(previewTarget?.filename) || 'Attachment Preview'}
+          {formatAttachmentName(previewTarget?.filename) ||
+            'Attachment Preview'}
         </DialogTitle>
         <DialogContent>
           {previewLoading ? (
