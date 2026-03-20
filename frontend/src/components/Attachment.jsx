@@ -26,7 +26,6 @@ import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutl
 import { useParams } from 'react-router';
 import { attachmentsApi } from '../api/attachmentsApi';
 import { formatDateTime } from '../utils/dateTime';
-import picPlaceholder from '../assets/picPlaceholder.png';
 
 function formatBytes(size) {
   if (!Number.isFinite(size) || size < 0) return '-';
@@ -299,16 +298,6 @@ function Attachment({ projectId: propProjectId }) {
                   <ListItemText
                     primary={
                       <Stack direction="row" spacing={1} alignItems="center">
-                        <Box
-                          component="img"
-                          src={attachment.previewUrl || picPlaceholder}
-                          alt={attachment.filename}
-                          sx={{
-                            width: 40,
-                            height: 40,
-                            objectFit: 'cover',
-                          }}
-                        />
                         <InsertDriveFileOutlinedIcon fontSize="small" />
                         <Typography
                           variant="body2"
