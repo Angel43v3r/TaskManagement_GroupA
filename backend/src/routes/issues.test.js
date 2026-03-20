@@ -50,15 +50,11 @@ vi.mock('../middleware/auth.js', () => ({
 // Mock comments controller
 
 vi.mock('../controllers/commentsController.js', () => ({
-  createComment: vi.fn((req, res) =>
-    res.status(201).json({ success: true })
-  ),
+  createComment: vi.fn((req, res) => res.status(201).json({ success: true })),
   getCommentByIssue: vi.fn((req, res) =>
     res.status(200).json({ success: true, comments: [] })
   ),
 }));
-
-
 
 const app = express();
 app.use(express.json());
@@ -105,7 +101,9 @@ describe('Issues Routes', () => {
   });
 
   it('POST issues/:id/comments creates a comment on an issue', async () => {
-    const res = await request(app).post('/issues/1/comments').send({body: 'test comment', issueId: 1, authorId: 1,});
+    const res = await request(app)
+      .post('/issues/1/comments')
+      .send({ body: 'test comment', issueId: 1, authorId: 1 });
 
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
@@ -117,5 +115,5 @@ describe('Issues Routes', () => {
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.comments).toEqual([]);
-  })
+  });
 });

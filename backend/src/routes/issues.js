@@ -18,7 +18,6 @@ import {
 } from '../controllers/commentsController.js';
 import { verifyToken } from '../middleware/auth.js';
 
-
 const router = express.Router();
 
 // post
@@ -105,6 +104,5 @@ router.post('/:id/comments', verifyToken, createComment);
  *         description: Server error
  */
 router.get('/:id/comments', verifyToken, getCommentByIssue);
-
 
 export default router;
