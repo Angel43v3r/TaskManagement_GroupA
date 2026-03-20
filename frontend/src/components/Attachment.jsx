@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import * as React from 'react';
 import {
   Alert,
   Box,
@@ -61,6 +61,7 @@ function getPreviewType(attachment = {}) {
 }
 
 function Attachment({ projectId: propProjectId }) {
+  const { useEffect, useMemo, useRef, useState } = React;
   const params = useParams();
   const projectId = propProjectId || params.projectId;
 
