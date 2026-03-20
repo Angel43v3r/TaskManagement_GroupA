@@ -34,6 +34,18 @@ function formatBytes(size) {
   return `${(size / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+function formatAttachmentName(filename = '') {
+  if (!filename || !/[ÃÂâð]/.test(filename)) return filename;
+
+  try {
+    const bytes = Uint8Array.from(filename, (char) => char.charCodeAt(0));
+    const decoded = new TextDecoder('utf-8', { fatal: false }).decode(bytes);
+    return decoded.includes('\uFFFD') ? filename : decoded;
+  } catch {
+    return filename;
+  }
+}
+
 function getFileExtension(filename = '') {
   const lastDotIndex = filename.lastIndexOf('.');
   if (lastDotIndex === -1) return '';
@@ -160,7 +172,7 @@ function Attachment({ projectId: propProjectId }) {
       const href = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = href;
-      link.download = attachment.filename || 'attachment';
+      link.download = formatAttachmentName(attachment.filename) || 'attachment';
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -271,14 +283,14 @@ function Attachment({ projectId: propProjectId }) {
                       <IconButton
                         size="small"
                         onClick={() => openPreview(attachment)}
-                        aria-label={`view ${attachment.filename}`}
+                        aria-label={`view ${formatAttachmentName(attachment.filename)}`}
                       >
                         <VisibilityOutlinedIcon fontSize="small" />
                       </IconButton>
                       <IconButton
                         size="small"
                         onClick={() => handleDownload(attachment)}
-                        aria-label={`download ${attachment.filename}`}
+                        aria-label={`download ${formatAttachmentName(attachment.filename)}`}
                       >
                         <DownloadIcon fontSize="small" />
                       </IconButton>
@@ -287,7 +299,7 @@ function Attachment({ projectId: propProjectId }) {
                         color="error"
                         onClick={() => askDelete(attachment)}
                         disabled={deletingId === attachment.id}
-                        aria-label={`delete ${attachment.filename}`}
+                        aria-label={`delete ${formatAttachmentName(attachment.filename)}`}
                       >
                         <DeleteOutlineIcon fontSize="small" />
                       </IconButton>
@@ -302,9 +314,9 @@ function Attachment({ projectId: propProjectId }) {
                         <Typography
                           variant="body2"
                           noWrap
-                          title={attachment.filename}
+                          title={formatAttachmentName(attachment.filename)}
                         >
-                          {attachment.filename}
+                          {formatAttachmentName(attachment.filename)}
                         </Typography>
                         <Chip
                           size="small"
@@ -386,8 +398,8 @@ function Attachment({ projectId: propProjectId }) {
         <DialogTitle>Delete Attachment</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Delete &quot;{deleteTarget?.filename}&quot;? This action cannot be
-            undone.
+            Delete &quot;{formatAttachmentName(deleteTarget?.filename)}&quot;?
+            This action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -409,7 +421,7 @@ function Attachment({ projectId: propProjectId }) {
         fullWidth
       >
         <DialogTitle>
-          {previewTarget?.filename || 'Attachment Preview'}
+          {formatAttachmentName(previewTarget?.filename) || 'Attachment Preview'}
         </DialogTitle>
         <DialogContent>
           {previewLoading ? (
@@ -420,14 +432,16 @@ function Attachment({ projectId: propProjectId }) {
             <Box
               component="img"
               src={previewUrl}
-              alt={previewTarget?.filename || 'preview'}
+              alt={formatAttachmentName(previewTarget?.filename) || 'preview'}
               sx={{ width: '100%', maxHeight: 520, objectFit: 'contain' }}
             />
           ) : previewType === 'pdf' && previewUrl ? (
             <Box
               component="iframe"
               src={previewUrl}
-              title={previewTarget?.filename || 'PDF preview'}
+              title={
+                formatAttachmentName(previewTarget?.filename) || 'PDF preview'
+              }
               sx={{ width: '100%', height: 520, border: 0 }}
             />
           ) : previewType === 'video' && previewUrl ? (
