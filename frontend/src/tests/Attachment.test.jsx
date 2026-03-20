@@ -2,7 +2,13 @@
 
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import Attachment from '../components/Attachment';
 import { attachmentsApi } from '../api/attachmentsApi';
@@ -95,7 +101,9 @@ describe('Attachment', () => {
       expect(attachmentsApi.listByProject).toHaveBeenCalledWith(projectId);
     });
 
-    const deleteButton = screen.getByRole('button', { name: 'delete notes.txt' });
+    const deleteButton = screen.getByRole('button', {
+      name: 'delete notes.txt',
+    });
     fireEvent.click(deleteButton);
 
     const confirmDeleteButton = screen.getByRole('button', { name: 'Delete' });
@@ -106,7 +114,9 @@ describe('Attachment', () => {
     });
 
     await waitFor(() => {
-      expect(screen.queryByRole('button', { name: 'delete notes.txt' })).toBeNull();
+      expect(
+        screen.queryByRole('button', { name: 'delete notes.txt' })
+      ).toBeNull();
     });
   });
 });

@@ -117,6 +117,16 @@ function Attachment({ projectId: propProjectId }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!success) return undefined;
+
+    const timeoutId = window.setTimeout(() => {
+      setSuccess('');
+    }, 5000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [success]);
+
   const handleSelectFiles = (event) => {
     const files = Array.from(event.target.files ?? []);
     setSelectedFiles(files);
