@@ -88,7 +88,6 @@ export {
   Attachment,
   AttachmentProject,
   Board,
-  IssueBoard,
   Comment,
   Project,
 };
