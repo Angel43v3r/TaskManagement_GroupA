@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { syncUser } from './syncUser';
 import { User } from '../models/model.js';
-import { toJS } from 'yaml/util';
 
 // Mock Sequelize model layer
 vi.mock('../models/model.js', () => ({
