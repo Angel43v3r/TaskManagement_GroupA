@@ -1,5 +1,5 @@
-import { Issue, Board, User } from '../models/model.js';
 import { Op } from 'sequelize';
+import { Issue, User } from '../models/model.js';
 
 export const createIssue = async (req, res) => {
   try {
@@ -11,7 +11,7 @@ export const createIssue = async (req, res) => {
       title,
       storyPoints,
       dueDate,
-      boardIds,
+      boardId,
       assigneeIds,
     } = req.body;
 
@@ -23,11 +23,8 @@ export const createIssue = async (req, res) => {
       title,
       storyPoints,
       dueDate,
+      boardId: boardId,
     });
-
-    if (Array.isArray(boardIds) && boardIds.length > 0 && issue.setBoards) {
-      await issue.setBoards(boardIds);
-    }
 
     if (
       Array.isArray(assigneeIds) &&
@@ -102,6 +99,7 @@ export const updateIssue = async (req, res) => {
       'status',
       'storyPoints',
       'dueDate',
+      'boardId',
     ];
 
     const updates = {};
@@ -119,24 +117,12 @@ export const updateIssue = async (req, res) => {
       }
     }
 
-    if (req.body.boardIds && Array.isArray(req.body.boardIds)) {
-      if (issue.setBoards) {
-        await issue.setBoards(req.body.boardIds);
-      }
-    }
-
     const updatedIssue = await Issue.findByPk(id, {
       include: [
         {
           model: User,
           as: 'assignees',
           attributes: ['id', 'firstName', 'lastName', 'email'],
-        },
-        {
-          model: Board,
-          as: 'boards',
-          attributes: ['id', 'title'],
-          through: { attributes: [] },
         },
       ],
     });
@@ -187,6 +173,7 @@ export const getAllIssues = async (req, res) => {
 
     const where = {};
 
+    if (boardId) where.boardId = boardId;
     if (type) where.type = type;
     if (reporterId) where.reporterId = reporterId;
     if (priority) where.priority = priority;
@@ -199,17 +186,6 @@ export const getAllIssues = async (req, res) => {
     }
 
     const include = [];
-
-    if (boardId) {
-      include.push({
-        model: Board,
-        as: 'boards',
-        where: { id: boardId },
-        attributes: [],
-        through: { attributes: [] },
-        required: true,
-      });
-    }
 
     include.push({
       model: User,
