@@ -15,7 +15,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  Paper,
   Stack,
   Typography,
 } from '@mui/material';
@@ -36,10 +35,28 @@ function formatBytes(size) {
   return `${(size / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function getPreviewType(mimeType = '') {
+function getFileExtension(filename = '') {
+  const lastDotIndex = filename.lastIndexOf('.');
+  if (lastDotIndex === -1) return '';
+  return filename.slice(lastDotIndex + 1).toLowerCase();
+}
+
+function getPreviewType(attachment = {}) {
+  const mimeType = attachment.mimeType || '';
+  const extension = getFileExtension(attachment.filename || '');
+
   if (mimeType.startsWith('image/')) return 'image';
   if (mimeType === 'application/pdf') return 'pdf';
   if (mimeType.startsWith('video/')) return 'video';
+  if (mimeType.startsWith('text/')) return 'text';
+
+  if (['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'svg'].includes(extension)) {
+    return 'image';
+  }
+  if (extension === 'pdf') return 'pdf';
+  if (['txt', 'md', 'csv', 'log', 'json'].includes(extension)) return 'text';
+  if (['mp4', 'webm', 'ogg', 'mov'].includes(extension)) return 'video';
+
   return 'unsupported';
 }
 
@@ -57,6 +74,7 @@ function Attachment({ projectId: propProjectId }) {
   const [deletingId, setDeletingId] = useState(null);
   const [previewTarget, setPreviewTarget] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
+  const [previewText, setPreviewText] = useState('');
   const [previewType, setPreviewType] = useState('unsupported');
   const [previewLoading, setPreviewLoading] = useState(false);
 
@@ -146,6 +164,7 @@ function Attachment({ projectId: propProjectId }) {
     setPreviewTarget(null);
     setPreviewLoading(false);
     setPreviewUrl('');
+    setPreviewText('');
     setPreviewType('unsupported');
     if (previewObjectUrlRef.current) {
       URL.revokeObjectURL(previewObjectUrlRef.current);
@@ -157,7 +176,7 @@ function Attachment({ projectId: propProjectId }) {
     closePreview();
     setPreviewTarget(attachment);
 
-    const attachmentPreviewType = getPreviewType(attachment.mimeType || '');
+    const attachmentPreviewType = getPreviewType(attachment);
     setPreviewType(attachmentPreviewType);
 
     if (attachmentPreviewType === 'unsupported') {
@@ -167,6 +186,12 @@ function Attachment({ projectId: propProjectId }) {
     setPreviewLoading(true);
     try {
       const blob = await attachmentsApi.downloadById(attachment.id);
+
+      if (attachmentPreviewType === 'text') {
+        setPreviewText(await blob.text());
+        return;
+      }
+
       const objectUrl = URL.createObjectURL(blob);
       previewObjectUrlRef.current = objectUrl;
       setPreviewUrl(objectUrl);
@@ -199,8 +224,12 @@ function Attachment({ projectId: propProjectId }) {
     }
   };
 
+  if (!projectId) {
+    return null;
+  }
+
   return (
-    <Paper variant="outlined" sx={{ p: 2 }}>
+    <Box sx={{ py: 1 }}>
       <Stack spacing={2}>
         <Typography variant="h6">Attachments</Typography>
 
@@ -408,9 +437,29 @@ function Attachment({ projectId: propProjectId }) {
               controls
               sx={{ width: '100%', maxHeight: 520 }}
             />
+          ) : previewType === 'text' ? (
+            <Box
+              component="pre"
+              sx={{
+                m: 0,
+                p: 2,
+                maxHeight: 520,
+                overflow: 'auto',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+                bgcolor: 'grey.100',
+                borderRadius: 1,
+                fontFamily: 'monospace',
+                fontSize: '0.875rem',
+              }}
+            >
+              {previewText}
+            </Box>
           ) : (
             <Typography variant="body2" color="text.secondary">
-              This file type cannot be previewed inline. Use download instead.
+              This file type cannot be previewed inline yet. Images, PDFs,
+              videos, and plain text files are supported. Word documents still
+              need a dedicated viewer or conversion step.
             </Typography>
           )}
         </DialogContent>
@@ -418,7 +467,7 @@ function Attachment({ projectId: propProjectId }) {
           <Button onClick={closePreview}>Close</Button>
         </DialogActions>
       </Dialog>
-    </Paper>
+    </Box>
   );
 }
 
