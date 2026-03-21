@@ -1,13 +1,9 @@
-import { Add, KeyboardArrowDown, Notifications } from '@mui/icons-material';
+import { Add, KeyboardArrowDown } from '@mui/icons-material';
 import {
   AppBar,
   Avatar,
-  Badge,
   Box,
   Button,
-  Dialog,
-  DialogContent,
-  DialogTitle,
   Divider,
   IconButton,
   Menu,
@@ -16,37 +12,32 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import useAuth from '../auth/useAuth';
-import keycloak from '../keycloak';
 import { useProject } from '../context/ProjectContext';
-import CreateIssueForm from './IssueForm/CreateIssueForm.jsx';
+import keycloak from '../keycloak';
 
 export default function Navbar() {
   const { user } = useAuth();
   const { projects, currentProject, switchProject } = useProject();
+  const navigate = useNavigate();
 
   const [yourWorkAnchor, setYourWorkAnchor] = useState(null);
   const [projectsAnchor, setProjectsAnchor] = useState(null);
   const [filtersAnchor, setFiltersAnchor] = useState(null);
   const [dashboardsAnchor, setDashboardsAnchor] = useState(null);
   const [userAnchor, setUserAnchor] = useState(null);
-  const [createIssue, setCreateIssue] = useState(false);
 
   const handleProjectSelect = (project) => {
     switchProject(project);
     setProjectsAnchor(null);
   };
 
-  const handleCreateIssue = () => {
-    setCreateIssue((prev) => !prev);
-  };
-
   return (
     <AppBar
       position="static"
       color="default"
-      elevation={1}
+      elevation={0}
       sx={{ bgcolor: 'white' }}
     >
       <Toolbar sx={{ gap: 2, minHeight: 56, alignItems: 'center' }}>
@@ -176,10 +167,20 @@ export default function Navbar() {
                   </MenuItem>
                 ))}
                 <Divider />
-                <MenuItem onClick={() => setProjectsAnchor(null)}>
+                <MenuItem
+                  onClick={() => {
+                    setProjectsAnchor(null);
+                    navigate('/projects');
+                  }}
+                >
                   View all projects
                 </MenuItem>
-                <MenuItem onClick={() => setProjectsAnchor(null)}>
+                <MenuItem
+                  onClick={() => {
+                    setProjectsAnchor(null);
+                    navigate('/projects/create');
+                  }}
+                >
                   <Add sx={{ mr: 1, fontSize: 20 }} />
                   Create project
                 </MenuItem>
@@ -252,28 +253,6 @@ export default function Navbar() {
         </Box>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          {keycloak.authenticated && (
-            <>
-              <Button
-                variant="contained"
-                startIcon={<Add />}
-                sx={{
-                  display: { xs: 'none', sm: 'flex' },
-                  textTransform: 'none',
-                }}
-                onClick={handleCreateIssue}
-              >
-                Create
-              </Button>
-
-              <IconButton disabled>
-                <Badge badgeContent=" " color="primary" variant="dot">
-                  <Notifications />
-                </Badge>
-              </IconButton>
-            </>
-          )}
-
           <IconButton onClick={(e) => setUserAnchor(e.currentTarget)}>
             <Avatar
               sx={{
@@ -297,7 +276,7 @@ export default function Navbar() {
             }}
           >
             {keycloak.authenticated ? (
-              <>
+              <Box>
                 <Box
                   sx={{
                     margin: '1rem',
@@ -339,7 +318,7 @@ export default function Navbar() {
                 >
                   Log out
                 </MenuItem>
-              </>
+              </Box>
             ) : (
               <MenuItem
                 onClick={() => {
@@ -352,19 +331,6 @@ export default function Navbar() {
             )}
           </Menu>
         </Box>
-        <Dialog
-          open={createIssue}
-          onClose={() => setCreateIssue(false)}
-          maxWidth="sm"
-          fullWidth
-        >
-          <DialogTitle>Create Issue</DialogTitle>
-          <DialogContent>
-            {createIssue && (
-              <CreateIssueForm onIssueCreation={setCreateIssue} />
-            )}
-          </DialogContent>
-        </Dialog>
       </Toolbar>
     </AppBar>
   );

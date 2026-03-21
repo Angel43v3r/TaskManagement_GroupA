@@ -6,6 +6,9 @@ import {
 import {
   Box,
   Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   IconButton,
   InputAdornment,
   TextField,
@@ -16,6 +19,7 @@ import { Link, useOutletContext } from 'react-router';
 import IssueCard from '../components/issue-card/IssueCard.jsx';
 import { useBoard } from '../context/BoardContext.jsx';
 import { useIssues } from '../context/IssuesContext.jsx';
+import CreateIssueForm from '../components/IssueForm/CreateIssueForm.jsx';
 import { useDroppable } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -94,19 +98,26 @@ function Column({ column, issues }) {
   );
 }
 
-function BoardContent() {
+export default function Board() {
   const { currentBoard } = useBoard();
-  const { issues } = useIssues();
+  const { issues, fetchIssues } = useIssues();
+  const [openCreateIssue, setOpenCreateIssue] = useState(false);
   const { project } = useOutletContext();
   const [searchQuery, setSearchQuery] = useState('');
+
+  const handleIssueCreation = () => {
+    setOpenCreateIssue(false);
+    fetchTasks();
+  };
 
   const filteredIssues = issues.filter((issue) =>
     issue.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const columns = currentBoard?.columns || [
-    { id: 'todo', title: 'To Do' },
-    { id: 'in-progress', title: 'In Progress' },
+    { id: 'backlog', title: 'Backlog' },
+    { id: 'in_progress', title: 'In Progress' },
+    { id: 'reviewed', title: 'In Review' },
     { id: 'done', title: 'Done' },
   ];
 
@@ -132,7 +143,8 @@ function BoardContent() {
   }
 
   return (
-    <Box sx={{ height: '100%', bgcolor: '#fafafa' }}>
+    <BoardDndProvider>
+    <Box sx={{ height: '100%' }}>
       <Box sx={{ maxWidth: 1400, mx: 'auto', px: 3, py: 3 }}>
         <Box
           sx={{
@@ -144,10 +156,13 @@ function BoardContent() {
         >
           <Box>
             <Typography
-              variant="h4"
+              variant="h5"
               sx={{ fontWeight: 400, color: '#333', mb: 0.5 }}
             >
-              {project?.name} / {currentBoard?.name}
+              <Link to={`/projects/${project.id}`} style={{ color: '#a3a3a3' }}>
+                {project?.name}
+              </Link>{' '}
+              / {currentBoard?.title}
             </Typography>
             <Typography variant="body2" sx={{ color: '#888' }}>
               {new Date().toLocaleDateString('en-US', {
@@ -186,6 +201,7 @@ function BoardContent() {
               variant="contained"
               startIcon={<AddIcon />}
               sx={{ bgcolor: '#333' }}
+              onClick={() => setOpenCreateIssue(true)}
             >
               Create Issue
             </Button>
@@ -198,15 +214,18 @@ function BoardContent() {
           ))}
         </Box>
       </Box>
+      <Dialog
+        open={openCreateIssue}
+        onClose={() => setOpenCreateIssue(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>Create Task</DialogTitle>
+        <DialogContent dividers>
+          <CreateIssueForm onIssueCreation={handleIssueCreation} />
+        </DialogContent>
+      </Dialog>
     </Box>
-  );
-}
-
-// Main Board component wraps content w/ DnD provider
-export default function Board() {
-  return (
-    <BoardDndProvider>
-      <BoardContent />
     </BoardDndProvider>
   );
 }

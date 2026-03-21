@@ -13,16 +13,14 @@ const requireWorkflowCompliance = async (req, res, next) => {
     const { status: newStatus } = req.body;
 
     if (!newStatus) {
-      return res.status(400).json({
-        message: 'New status is required',
-      });
+      return next();
     }
 
     const issue = await getById(issueId);
 
     if (!issue) {
       return res.status(404).json({
-        message: 'Ticket not found',
+        message: 'Issue not found',
       });
     }
 

@@ -30,7 +30,7 @@ export function ProjectProvider({ children }) {
     setLoading(true);
     try {
       const { data } = await projectsApi.getAll();
-      setProjects(data);
+      setProjects(data.projects ?? []);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -53,7 +53,15 @@ export function ProjectProvider({ children }) {
 
   return (
     <ProjectContext.Provider
-      value={{ projects, currentProject, loading, error, switchProject }}
+      value={{
+        projects,
+        setProjects,
+        fetchProjects,
+        currentProject,
+        loading,
+        error,
+        switchProject,
+      }}
     >
       {children}
     </ProjectContext.Provider>
