@@ -144,88 +144,91 @@ export default function Board() {
 
   return (
     <BoardDndProvider>
-    <Box sx={{ height: '100%' }}>
-      <Box sx={{ maxWidth: 1400, mx: 'auto', px: 3, py: 3 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            mb: 3,
-          }}
+      <Box sx={{ height: '100%' }}>
+        <Box sx={{ maxWidth: 1400, mx: 'auto', px: 3, py: 3 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              mb: 3,
+            }}
+          >
+            <Box>
+              <Typography
+                variant="h5"
+                sx={{ fontWeight: 400, color: '#333', mb: 0.5 }}
+              >
+                <Link
+                  to={`/projects/${project.id}`}
+                  style={{ color: '#a3a3a3' }}
+                >
+                  {project?.name}
+                </Link>{' '}
+                / {currentBoard?.title}
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#888' }}>
+                {new Date().toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                })}
+              </Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <TextField
+                placeholder="Search issues..."
+                size="small"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon sx={{ color: '#999' }} />
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+                sx={{
+                  width: 220,
+                  '& .MuiOutlinedInput-root': { bgcolor: 'white' },
+                }}
+              />
+              <Button variant="outlined" startIcon={<FilterIcon />}>
+                Filter
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                sx={{ bgcolor: '#333' }}
+                onClick={() => setOpenCreateIssue(true)}
+              >
+                Create Issue
+              </Button>
+            </Box>
+          </Box>
+
+          <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2 }}>
+            {columns.map((column) => (
+              <Column key={column.id} column={column} issues={filteredIssues} />
+            ))}
+          </Box>
+        </Box>
+        <Dialog
+          open={openCreateIssue}
+          onClose={() => setOpenCreateIssue(false)}
+          fullWidth
+          maxWidth="sm"
         >
-          <Box>
-            <Typography
-              variant="h5"
-              sx={{ fontWeight: 400, color: '#333', mb: 0.5 }}
-            >
-              <Link to={`/projects/${project.id}`} style={{ color: '#a3a3a3' }}>
-                {project?.name}
-              </Link>{' '}
-              / {currentBoard?.title}
-            </Typography>
-            <Typography variant="body2" sx={{ color: '#888' }}>
-              {new Date().toLocaleDateString('en-US', {
-                weekday: 'long',
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric',
-              })}
-            </Typography>
-          </Box>
-
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <TextField
-              placeholder="Search issues..."
-              size="small"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon sx={{ color: '#999' }} />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-              sx={{
-                width: 220,
-                '& .MuiOutlinedInput-root': { bgcolor: 'white' },
-              }}
-            />
-            <Button variant="outlined" startIcon={<FilterIcon />}>
-              Filter
-            </Button>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              sx={{ bgcolor: '#333' }}
-              onClick={() => setOpenCreateIssue(true)}
-            >
-              Create Issue
-            </Button>
-          </Box>
-        </Box>
-
-        <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2 }}>
-          {columns.map((column) => (
-            <Column key={column.id} column={column} issues={filteredIssues} />
-          ))}
-        </Box>
+          <DialogTitle>Create Issue</DialogTitle>
+          <DialogContent dividers>
+            <CreateIssueForm onIssueCreation={handleIssueCreation} />
+          </DialogContent>
+        </Dialog>
       </Box>
-      <Dialog
-        open={openCreateIssue}
-        onClose={() => setOpenCreateIssue(false)}
-        fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle>Create Issue</DialogTitle>
-        <DialogContent dividers>
-          <CreateIssueForm onIssueCreation={handleIssueCreation} />
-        </DialogContent>
-      </Dialog>
-    </Box>
     </BoardDndProvider>
   );
 }

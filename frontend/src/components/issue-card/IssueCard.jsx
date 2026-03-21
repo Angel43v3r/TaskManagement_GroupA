@@ -15,7 +15,7 @@ const ISSUE_TYPES = {
   EPIC: 'epic',
   STORY: 'story',
   TASK: 'task',
-  BUG: 'bug'
+  BUG: 'bug',
 };
 
 // Get icon and color based on issue type

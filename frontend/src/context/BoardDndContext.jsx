@@ -45,32 +45,31 @@ export function BoardDndProvider({ children }) {
 
     if (activeId === overId) return;
 
-    const activeIssue = issues.find((i) => i.id === activeId);
-    if (!activeIssue) return;
+    const draggedIssue = issues.find((i) => i.id === activeId);
+    if (!draggedIssue) return;
 
     const overIssue = issues.find((i) => i.id === overId);
 
     if (overIssue) {
-      if (activeIssue.status === overIssue.status) {
+      if (draggedIssue.status === overIssue.status) {
         // Same column: reorder
         const columnIssues = issues.filter(
-          (i) => i.status === activeIssue.status
+          (i) => i.status === draggedIssue.status
         );
         const oldIndex = columnIssues.findIndex((i) => i.id === activeId);
         const newIndex = columnIssues.findIndex((i) => i.id === overId);
 
         if (oldIndex !== newIndex) {
-          reorderIssues(activeIssue.status, oldIndex, newIndex);
+          reorderIssues(draggedIssue.status, oldIndex, newIndex);
         }
       } else {
-        // Different column: determine insert position based on pointer location
+        // Calculate position at drop time for cross-column moves
         const targetColumnIssues = issues.filter(
           (i) => i.status === overIssue.status
         );
         let targetIndex = targetColumnIssues.findIndex((i) => i.id === overId);
 
-        // Check if dropping below the center of the target card
-        if (over.rect) {
+        if (over.rect && active.rect.current.translated) {
           const overCenterY = over.rect.top + over.rect.height / 2;
           const pointerY =
             active.rect.current.translated?.top +
@@ -85,14 +84,8 @@ export function BoardDndProvider({ children }) {
       }
     } else {
       // Dropped over empty column area
-      const isColumnId = [
-        'backlog',
-        'in_progress',
-        'reviewed',
-        'done',
-        'todo',
-      ].includes(overId);
-      if (isColumnId && activeIssue.status !== overId) {
+      const columnIds = ['backlog', 'in_progress', 'reviewed', 'done'];
+      if (columnIds.includes(overId) && draggedIssue.status !== overId) {
         moveIssue(activeId, overId);
       }
     }
@@ -115,6 +108,3 @@ export function BoardDndProvider({ children }) {
     </BoardDndContext.Provider>
   );
 }
-
-// Hood to access DnD context state
-export const useBoardDnd = () => useContext(BoardDndContext);
