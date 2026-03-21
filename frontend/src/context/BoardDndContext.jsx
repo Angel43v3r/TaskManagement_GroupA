@@ -7,8 +7,8 @@ import {
   useSensors,
   rectIntersection,
 } from '@dnd-kit/core';
-import { useIssues } from '../../context/IssuesContext.jsx';
-import IssueCard from '../issue-card/IssueCard.jsx';
+import { useIssues } from './IssuesContext.jsx';
+import IssueCard from '../components/issue-card/IssueCard.jsx';
 
 const BoardDndContext = createContext(null);
 
@@ -91,7 +91,6 @@ export function BoardDndProvider({ children }) {
         'reviewed',
         'done',
         'todo',
-        'in_review',
       ].includes(overId);
       if (isColumnId && activeIssue.status !== overId) {
         moveIssue(activeId, overId);

@@ -2,7 +2,6 @@ import { Box, Typography, Paper, IconButton, Tooltip } from '@mui/material';
 import {
   EditOutlined as EditIcon,
   Circle as CircleIcon,
-  Pentagon as PentagonIcon,
   AccountTreeOutlined as NestingIcon,
 } from '@mui/icons-material';
 import StoryPoints from './StoryPoints.jsx';
@@ -15,23 +14,9 @@ import { useIssues } from '../../context/IssuesContext.jsx';
 const ISSUE_TYPES = {
   EPIC: 'epic',
   STORY: 'story',
-  SUBISSUE: 'subissue',
+  TASK: 'task',
+  BUG: 'bug'
 };
-
-// Custom rhombus icon for subissues
-function RhombusIcon({ sx }) {
-  return (
-    <Box
-      sx={{
-        width: 8,
-        height: 8,
-        bgcolor: '#F5A623',
-        transform: 'rotate(45deg)',
-        ...sx,
-      }}
-    />
-  );
-}
 
 // Get icon and color based on issue type
 function getIssueTypeIcon(type) {
@@ -39,21 +24,25 @@ function getIssueTypeIcon(type) {
     case ISSUE_TYPES.EPIC:
       return (
         <Tooltip title="Epic" arrow>
-          <CircleIcon sx={{ fontSize: 14, color: '#E91E8C' }} />
+          <CircleIcon sx={{ fontSize: 14, color: 'violet' }} />
         </Tooltip>
       );
     case ISSUE_TYPES.STORY:
       return (
         <Tooltip title="Story" arrow>
-          <PentagonIcon sx={{ fontSize: 14, color: '#00B8D9' }} />
+          <CircleIcon sx={{ fontSize: 14, color: 'lightblue' }} />
         </Tooltip>
       );
-    case ISSUE_TYPES.SUBISSUE:
+    case ISSUE_TYPES.TASK:
       return (
-        <Tooltip title="Sub-issue" arrow>
-          <Box component="span" sx={{ display: 'inline-flex' }}>
-            <RhombusIcon />
-          </Box>
+        <Tooltip title="Task" arrow>
+          <CircleIcon sx={{ fontSize: 14, color: 'lightgreen' }} />
+        </Tooltip>
+      );
+    case ISSUE_TYPES.BUG:
+      return (
+        <Tooltip title="Bug" arrow>
+          <CircleIcon sx={{ fontSize: 14, color: 'coral' }} />
         </Tooltip>
       );
     default:

@@ -25,7 +25,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { BoardDndProvider } from '../components/board/BoardDndContext.jsx';
+import { BoardDndProvider } from '../context/BoardDndContext.jsx';
 
 // Column Component
 function Column({ column, issues }) {
@@ -107,7 +107,7 @@ export default function Board() {
 
   const handleIssueCreation = () => {
     setOpenCreateIssue(false);
-    fetchTasks();
+    fetchIssues();
   };
 
   const filteredIssues = issues.filter((issue) =>
@@ -220,7 +220,7 @@ export default function Board() {
         fullWidth
         maxWidth="sm"
       >
-        <DialogTitle>Create Task</DialogTitle>
+        <DialogTitle>Create Issue</DialogTitle>
         <DialogContent dividers>
           <CreateIssueForm onIssueCreation={handleIssueCreation} />
         </DialogContent>
