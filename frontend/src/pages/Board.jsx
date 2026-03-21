@@ -120,8 +120,9 @@ export default function Board() {
     setSelectedIssue(null);
   };
 
-  const handleEditSuccess = () => {
-    fetchIssues();
+  const handleEditSuccess = async () => {
+    await fetchIssues();
+    setSelectedIssue(null);
   };
 
   const filteredIssues = issues.filter((issue) =>

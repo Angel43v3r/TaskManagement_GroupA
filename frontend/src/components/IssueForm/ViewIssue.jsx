@@ -40,7 +40,6 @@ function ViewIssue({ issue, onClose, onEditSuccess }) {
         initialData={issue}
         onIssueCreation={() => {
           if (onEditSuccess) onEditSuccess();
-          onClose();
         }}
       />
     );
