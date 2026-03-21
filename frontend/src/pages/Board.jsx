@@ -20,6 +20,7 @@ import IssueCard from '../components/issue-card/IssueCard.jsx';
 import { useBoard } from '../context/BoardContext.jsx';
 import { useIssues } from '../context/IssuesContext.jsx';
 import CreateIssueForm from '../components/IssueForm/CreateIssueForm.jsx';
+import ViewIssue from '../components/IssueForm/ViewIssue.jsx';
 import { useDroppable } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -28,7 +29,7 @@ import {
 import { BoardDndProvider } from '../context/BoardDndContext.jsx';
 
 // Column Component
-function Column({ column, issues }) {
+function Column({ column, issues, onViewClick }) {
   const columnIssues = issues.filter((issue) => issue.status === column.id);
   const issueCount = columnIssues.length;
   const issueIds = columnIssues.map((issue) => issue.id);
@@ -90,7 +91,7 @@ function Column({ column, issues }) {
           strategy={verticalListSortingStrategy}
         >
           {columnIssues.map((issue) => (
-            <IssueCard key={issue.id} issue={issue} />
+            <IssueCard key={issue.id} issue={issue} onViewClick={onViewClick} />
           ))}
         </SortableContext>
       </Box>
@@ -104,9 +105,22 @@ export default function Board() {
   const [openCreateIssue, setOpenCreateIssue] = useState(false);
   const { project } = useOutletContext();
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedIssue, setSelectedIssue] = useState(null);
 
   const handleIssueCreation = () => {
     setOpenCreateIssue(false);
+    fetchIssues();
+  };
+
+  const handleViewClick = (issue) => {
+    setSelectedIssue(issue);
+  };
+
+  const handleCloseViewIssue = () => {
+    setSelectedIssue(null);
+  };
+
+  const handleEditSuccess = () => {
     fetchIssues();
   };
 
@@ -213,10 +227,16 @@ export default function Board() {
 
           <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2 }}>
             {columns.map((column) => (
-              <Column key={column.id} column={column} issues={filteredIssues} />
+              <Column
+                key={column.id}
+                column={column}
+                issues={filteredIssues}
+                onViewClick={handleViewClick}
+              />
             ))}
           </Box>
         </Box>
+
         <Dialog
           open={openCreateIssue}
           onClose={() => setOpenCreateIssue(false)}
@@ -228,6 +248,24 @@ export default function Board() {
             <CreateIssueForm onIssueCreation={handleIssueCreation} />
           </DialogContent>
         </Dialog>
+
+        {/* View/Edit Issue Dialog */}
+        {selectedIssue && (
+          <Dialog
+            open={true}
+            onClose={handleCloseViewIssue}
+            fullWidth
+            maxWidth="sm"
+          >
+            <DialogContent>
+              <ViewIssue
+                issue={selectedIssue}
+                onClose={handleCloseViewIssue}
+                onEditSuccess={handleEditSuccess}
+              />
+            </DialogContent>
+          </Dialog>
+        )}
       </Box>
     </BoardDndProvider>
   );
