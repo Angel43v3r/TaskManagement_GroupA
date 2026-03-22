@@ -46,4 +46,39 @@ describe('ProjectAutocomplete', () => {
       );
     });
   });
+
+  it('calls onChange when a project is selected', async () => {
+    const mockProject = { name: 'Apollo' };
+    AutocompleteSearch.mockReturnValue([mockProject]);
+    const mockChange = vi.fn();
+
+    render(<ProjectAutocomplete value={null} onChange={mockChange} />);
+
+    const input = screen.getByRole('combobox');
+    fireEvent.mouseDown(input);
+
+    const options = await screen.findAllByRole('option');
+    expect(options[0].textContent).toBe('Apollo');
+
+    fireEvent.click(options[0]);
+    expect(mockChange).toHaveBeenCalledWith(mockProject);
+  });
+
+  it('renders an empty string for options without name', async () => {
+    const mockProject = {};
+    AutocompleteSearch.mockReturnValue([mockProject]);
+    const mockChange = vi.fn();
+
+    render(<ProjectAutocomplete value={null} onChange={mockChange} />);
+
+    const input = screen.getByRole('combobox');
+    fireEvent.mouseDown(input);
+
+    const options = await screen.findAllByRole('option');
+    expect(options[0].textContent).toBe('');
+
+    fireEvent.click(options[0]);
+    expect(mockChange).toHaveBeenCalledWith(mockProject);
+  });
+
 });
