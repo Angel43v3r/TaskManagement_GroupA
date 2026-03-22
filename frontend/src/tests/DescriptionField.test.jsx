@@ -14,4 +14,15 @@ describe('DescriptionField', () => {
 
         expect(screen.getByLabelText(/description/i)).toBeInTheDocument();
     });
+
+    it('displays the provided description value', () => {
+        render(
+            <DescriptionField
+                description="fix a bug"
+                onUpdateDescription={vi.fn()}
+            />
+        );
+
+        expect(screen.getByDisplayValue('fix a bug')).toBeInTheDocument();
+    })
 });
