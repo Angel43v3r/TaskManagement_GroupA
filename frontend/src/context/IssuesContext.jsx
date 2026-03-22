@@ -129,21 +129,12 @@ export function IssuesProvider({ children }) {
       const reorderedColumnIssues = arrayMove(columnIssues, oldIndex, newIndex);
       // Combines them back together
       const newIssues = [...otherIssues, ...reorderedColumnIssues];
-      // Stores previous state for rollback
-      const previousIssues = [...issues];
       // Optimistic update
       setIssues(newIssues);
 
       // Skips API call if using mock data
       if (!currentProject?.id || !currentBoard?.id) {
         return;
-      }
-      // Persist to backend (would need API endpoint for bulk order update)
-      try {
-        // ...
-      } catch (err) {
-        setIssues(previousIssues);
-        setError(err.message);
       }
     },
     [issues, currentProject?.id, currentBoard?.id]
