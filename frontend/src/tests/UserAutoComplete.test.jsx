@@ -67,4 +67,26 @@ describe('UserAutoComplete', () => {
 
         expect(mockChange).toHaveBeenCalledWith(mockUser);
     });
+
+    it('renders empty string for options without full name', async () => {
+        const mockUser = {};
+        AutocompleteSearch.mockReturnValue([mockUser]);
+        const mockChange = vi.fn();
+        render(
+            <UserAutoComplete
+                userValue={null}
+                onUserValueChange={mockChange}
+            />
+        );
+
+        const input = screen.getByRole('combobox');
+
+        fireEvent.mouseDown(input);
+
+        const options = await screen.findAllByRole('option');
+        expect(options[0].textContent).toBe('');
+
+        fireEvent.click(options[0]);
+        expect(mockChange).toHaveBeenCalledWith(mockUser);
+    });
 });
