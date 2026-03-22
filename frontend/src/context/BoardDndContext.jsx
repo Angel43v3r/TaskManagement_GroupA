@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 import {
   DndContext,
   DragOverlay,
@@ -11,6 +11,21 @@ import { useIssues } from './IssuesContext.jsx';
 import IssueCard from '../components/issue-card/IssueCard.jsx';
 
 const BoardDndContext = createContext(null);
+
+// Workflow validation rules (mirrors backend WorkflowService.js)
+const allowedTransitions = {
+  backlog: ['in_progress'],
+  in_progress: ['reviewed', 'backlog'],
+  reviewed: ['done', 'in_progress'],
+  done: ['reviewed', 'archived'],
+  archived: [],
+};
+
+// Check if a status transition is valid
+export const isValidTransition = (fromStatus, toStatus) => {
+  if (fromStatus === toStatus) return true; // Same column is always valid
+  return allowedTransitions[fromStatus]?.includes(toStatus) ?? false;
+};
 
 // Provider component that wraps the board w/ drag-n-drop functionality
 export function BoardDndProvider({ children }) {
@@ -63,6 +78,11 @@ export function BoardDndProvider({ children }) {
           reorderIssues(draggedIssue.status, oldIndex, newIndex);
         }
       } else {
+        // Check workflow validity before moving
+        if (!isValidTransition(draggedIssue.status, overIssue.status)) {
+          return; // Don't move if invalid transition
+        }
+
         // Calculate position at drop time for cross-column moves
         const targetColumnIssues = issues.filter(
           (i) => i.status === overIssue.status
@@ -86,6 +106,10 @@ export function BoardDndProvider({ children }) {
       // Dropped over empty column area
       const columnIds = ['backlog', 'in_progress', 'reviewed', 'done'];
       if (columnIds.includes(overId) && draggedIssue.status !== overId) {
+        // Check workflow validity before moving
+        if (!isValidTransition(draggedIssue.status, overId)) {
+          return; // Don't move if invalid transition
+        }
         moveIssue(activeId, overId);
       }
     }
@@ -108,3 +132,6 @@ export function BoardDndProvider({ children }) {
     </BoardDndContext.Provider>
   );
 }
+
+// Hook to access DnD context state
+export const useBoardDnd = () => useContext(BoardDndContext);
