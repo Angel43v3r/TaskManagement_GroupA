@@ -6,8 +6,13 @@ import {
   waitFor,
   fireEvent,
 } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { vi, describe, it, expect, afterEach } from 'vitest';
 import AutocompleteSearch from '../components/IssueForm/AutocompleteSearch';
+
+vi.mock('../components/IssueForm/AutocompleteSearch', () => ({
+  default: vi.fn(),
+}));
 
 describe('ProjectAutocomplete', () => {
   afterEach(() => {
@@ -23,4 +28,22 @@ describe('ProjectAutocomplete', () => {
 
         expect(screen.getByLabelText(/project/i)).toBeInTheDocument();
     });
+
+  it('calls AutoCompleteSearch with the input value', async () => {
+    AutocompleteSearch.mockReturnValue([]);
+
+    const project = userEvent.setup();
+
+    render(<ProjectAutocomplete value={null} onChange={vi.fn()} />);
+
+    const input = screen.getByRole('combobox');
+
+    await project.type(input, 'app');
+    await waitFor(() => {
+      expect(AutocompleteSearch).toHaveBeenLastCalledWith(
+        '/api/projects',
+        'app'
+      );
+    });
+  });
 });
