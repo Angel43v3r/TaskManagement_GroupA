@@ -129,8 +129,6 @@ export function IssuesProvider({ children }) {
       const reorderedColumnIssues = arrayMove(columnIssues, oldIndex, newIndex);
       // Combines them back together
       const newIssues = [...otherIssues, ...reorderedColumnIssues];
-      // Stores previous state for rollback
-      const previousIssues = [...issues];
       // Optimistic update
       setIssues(newIssues);
 
