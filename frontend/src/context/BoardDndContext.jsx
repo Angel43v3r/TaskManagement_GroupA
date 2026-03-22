@@ -104,7 +104,13 @@ export function BoardDndProvider({ children }) {
       }
     } else {
       // Dropped over empty column area
-      const columnIds = ['backlog', 'in_progress', 'reviewed', 'done'];
+      const columnIds = [
+        'backlog',
+        'in_progress',
+        'reviewed',
+        'done',
+        'archived',
+      ];
       if (columnIds.includes(overId) && draggedIssue.status !== overId) {
         // Check workflow validity before moving
         if (!isValidTransition(draggedIssue.status, overId)) {
