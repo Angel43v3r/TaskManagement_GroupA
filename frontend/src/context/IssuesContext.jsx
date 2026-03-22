@@ -138,13 +138,6 @@ export function IssuesProvider({ children }) {
       if (!currentProject?.id || !currentBoard?.id) {
         return;
       }
-      // Persist to backend (would need API endpoint for bulk order update)
-      try {
-        // ...
-      } catch (err) {
-        setIssues(previousIssues);
-        setError(err.message);
-      }
     },
     [issues, currentProject?.id, currentBoard?.id]
   );
