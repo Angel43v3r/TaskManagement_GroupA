@@ -107,7 +107,9 @@ export function IssuesProvider({ children }) {
       } catch (err) {
         // Rollback on error
         setIssues(previousIssues);
-        setError(err.message);
+        // Extract error message from response if available
+        const errorMessage = err.response?.data?.error || err.message;
+        setError(errorMessage);
       } finally {
         setUpdatingIds(
           (prev) => new Set([...prev].filter((id) => id !== issueId))
@@ -158,6 +160,7 @@ export function IssuesProvider({ children }) {
         setIssues,
         loading,
         error,
+        setError,
         fetchIssues,
         updateIssue,
         updatingIds,

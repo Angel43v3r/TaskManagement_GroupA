@@ -4,6 +4,7 @@ import {
   Search as SearchIcon,
 } from '@mui/icons-material';
 import {
+  Alert,
   Box,
   Button,
   Dialog,
@@ -11,10 +12,11 @@ import {
   DialogTitle,
   IconButton,
   InputAdornment,
+  Snackbar,
   TextField,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useOutletContext } from 'react-router';
 import IssueCard from '../components/issue-card/IssueCard.jsx';
 import { useBoard } from '../context/BoardContext.jsx';
@@ -25,10 +27,15 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { BoardDndProvider } from '../context/BoardDndContext.jsx';
+import {
+  BoardDndProvider,
+  useBoardDnd,
+  isValidTransition,
+} from '../context/BoardDndContext.jsx';
 
 // Column Component
 function Column({ column, issues }) {
+  const { activeIssue } = useBoardDnd();
   const columnIssues = issues.filter((issue) => issue.status === column.id);
   const issueCount = columnIssues.length;
   const issueIds = columnIssues.map((issue) => issue.id);
@@ -37,6 +44,34 @@ function Column({ column, issues }) {
   const { isOver, setNodeRef } = useDroppable({
     id: column.id,
   });
+
+  // Determine if drop is valid based on workflow rules
+  const isValidDrop = activeIssue
+    ? isValidTransition(activeIssue.status, column.id)
+    : true;
+
+  // Determine highlight color: blue for valid, red for invalid
+  const getHighlightStyles = () => {
+    if (!isOver) {
+      return {
+        bgcolor: '#f5f5f5',
+        border: '2px dashed transparent',
+      };
+    }
+    if (isValidDrop) {
+      return {
+        bgcolor: '#e3f2fd',
+        border: '2px dashed #2196f3',
+      };
+    }
+    // Invalid drop - red highlight
+    return {
+      bgcolor: '#ffebee',
+      border: '2px dashed #f44336',
+    };
+  };
+
+  const highlightStyles = getHighlightStyles();
 
   return (
     <Box
@@ -77,12 +112,12 @@ function Column({ column, issues }) {
         ref={setNodeRef}
         sx={{
           flex: 1,
-          bgcolor: isOver ? '#e3f2fd' : '#f5f5f5',
+          bgcolor: highlightStyles.bgcolor,
           borderRadius: 1,
           p: 1.5,
           minHeight: 200,
-          transition: 'background-color 0.2s ease',
-          border: isOver ? '2px dashed #2196f3' : '2px dashed transparent',
+          transition: 'background-color 0.2s ease, border-color 0.2s ease',
+          border: highlightStyles.border,
         }}
       >
         <SortableContext
@@ -100,10 +135,26 @@ function Column({ column, issues }) {
 
 export default function Board() {
   const { currentBoard } = useBoard();
-  const { issues, fetchIssues } = useIssues();
+  const { issues, fetchIssues, error, setError } = useIssues();
   const [openCreateIssue, setOpenCreateIssue] = useState(false);
   const { project } = useOutletContext();
   const [searchQuery, setSearchQuery] = useState('');
+  const [errorToast, setErrorToast] = useState(null);
+
+  // Show toast when error occurs
+  useEffect(() => {
+    if (error) {
+      setErrorToast(error);
+    }
+  }, [error]);
+
+  // Handle closing the error toast
+  const handleCloseErrorToast = () => {
+    setErrorToast(null);
+    if (setError) {
+      setError(null);
+    }
+  };
 
   const handleIssueCreation = () => {
     setOpenCreateIssue(false);
@@ -228,6 +279,22 @@ export default function Board() {
             <CreateIssueForm onIssueCreation={handleIssueCreation} />
           </DialogContent>
         </Dialog>
+
+        {/* Error toast for failed drag operations */}
+        <Snackbar
+          open={Boolean(errorToast)}
+          autoHideDuration={6000}
+          onClose={handleCloseErrorToast}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
+          <Alert
+            onClose={handleCloseErrorToast}
+            severity="error"
+            sx={{ width: '100%' }}
+          >
+            {errorToast}
+          </Alert>
+        </Snackbar>
       </Box>
     </BoardDndProvider>
   );
