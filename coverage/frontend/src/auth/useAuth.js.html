@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>Code coverage report for backend/src/middleware/auth.js</title>
+    <title>Code coverage report for frontend/src/auth/useAuth.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../../prettify.css" />
     <link rel="stylesheet" href="../../../base.css" />
@@ -19,31 +19,31 @@
       <div class="pad1">
         <h1>
           <a href="../../../index.html">All files</a> /
-          <a href="index.html">backend/src/middleware</a> auth.js
+          <a href="index.html">frontend/src/auth</a> useAuth.js
         </h1>
         <div class="clearfix">
           <div class="fl pad1y space-right2">
-            <span class="strong">35.71% </span>
+            <span class="strong">0% </span>
             <span class="quiet">Statements</span>
-            <span class="fraction">5/14</span>
+            <span class="fraction">0/4</span>
           </div>
 
           <div class="fl pad1y space-right2">
-            <span class="strong">20% </span>
+            <span class="strong">0% </span>
             <span class="quiet">Branches</span>
-            <span class="fraction">2/10</span>
+            <span class="fraction">0/2</span>
           </div>
 
           <div class="fl pad1y space-right2">
-            <span class="strong">100% </span>
+            <span class="strong">0% </span>
             <span class="quiet">Functions</span>
-            <span class="fraction">1/1</span>
+            <span class="fraction">0/1</span>
           </div>
 
           <div class="fl pad1y space-right2">
-            <span class="strong">35.71% </span>
+            <span class="strong">0% </span>
             <span class="quiet">Lines</span>
-            <span class="fraction">5/14</span>
+            <span class="fraction">0/4</span>
           </div>
         </div>
         <p class="quiet">
@@ -86,23 +86,21 @@
 <a name='L25'></a><a href='#L25'>25</a>
 <a name='L26'></a><a href='#L26'>26</a>
 <a name='L27'></a><a href='#L27'>27</a>
-<a name='L28'></a><a href='#L28'>28</a>
-<a name='L29'></a><a href='#L29'>29</a>
-<a name='L30'></a><a href='#L30'>30</a>
-<a name='L31'></a><a href='#L31'>31</a>
-<a name='L32'></a><a href='#L32'>32</a>
-<a name='L33'></a><a href='#L33'>33</a>
-<a name='L34'></a><a href='#L34'>34</a>
-<a name='L35'></a><a href='#L35'>35</a>
-<a name='L36'></a><a href='#L36'>36</a>
-<a name='L37'></a><a href='#L37'>37</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L28'></a><a href='#L28'>28</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -112,61 +110,36 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import * as jose from 'jose';
-import { getJWKS } from '../config/keycloak.js';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { useContext } from 'react';
+import { AuthContext } from './AuthContext';
 &nbsp;
-export const verifyToken = async (req, res, next) =&gt; {
-  const authHeader = req.headers.authorization;
+/**
+ * Custom hook to access authentication state and helpers.
+ *
+ * This hook provides access to the AuthContext, including:
+ * - authentication status
+ * - loading state
+ * - current user info
+ * - role-based helper functions
+ * - login/logout actions
+ *
+ * Must be used within an &lt;AuthProvider /&gt;.
+ *
+ * @throws {Error} If used outside of an AuthProvider
+ * @returns {object} Auth context value
+ */
+export default function <span class="fstat-no" title="function not covered" >useAuth(</span>) {
+  const ctx =<span class="cstat-no" title="statement not covered" > useContext(AuthContext);</span>
 &nbsp;
-  <span class="missing-if-branch" title="else path not taken" >E</span>if (!authHeader || <span class="branch-1 cbranch-no" title="branch not covered" >!authHeader.startsWith('Bearer '))</span> {
-    return res
-      .status(401)
-      .json({ error: 'Missing or invalid authorization header' });
+<span class="cstat-no" title="statement not covered" >  if (!ctx) {</span>
+<span class="cstat-no" title="statement not covered" >    throw new Error('useAuth must be used within an AuthProvider');</span>
   }
 &nbsp;
-  const token = <span class="cstat-no" title="statement not covered" >authHeader.split(' ')[1];</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >  try {</span>
-    const jwks =<span class="cstat-no" title="statement not covered" > getJWKS();</span>
-&nbsp;
-    const { payload } = <span class="cstat-no" title="statement not covered" >await jose.jwtVerify(token, jwks, {});</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    if (payload.exp &amp;&amp; payload.exp &lt; Date.now() / 1000) {</span>
-<span class="cstat-no" title="statement not covered" >      return res.status(401).json({ error: 'Token expired' });</span>
-    }
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    req.user = {</span>
-      sub: payload.sub,
-      email: payload.email,
-      name: payload.name,
-      preferred_username: payload.preferred_username,
-      roles: payload.realm_access.roles || [],
-    };
-    next();
-  } catch (err) {
-<span class="cstat-no" title="statement not covered" >    console.error('Token verification error: ', err);</span>
-<span class="cstat-no" title="statement not covered" >    return res.status(401).json({ error: 'Invalid or expired token' });</span>
-  }
-};
+<span class="cstat-no" title="statement not covered" >  return ctx;</span>
+}
 &nbsp;</pre></td></tr></table></pre>
 
       <div class="push"></div>
