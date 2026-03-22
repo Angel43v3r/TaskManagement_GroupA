@@ -1,92 +1,82 @@
-import { render, screen, cleanup, waitFor, fireEvent } from '@testing-library/react';
+import {
+  render,
+  screen,
+  cleanup,
+  waitFor,
+  fireEvent,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi, describe, it, expect, afterEach } from 'vitest';
 import UserAutoComplete from '../components/IssueForm/UserAutoComplete';
 import AutocompleteSearch from '../components/IssueForm/AutocompleteSearch';
 
 vi.mock('../components/IssueForm/AutocompleteSearch', () => ({
-    default: vi.fn(),
+  default: vi.fn(),
 }));
 
 describe('UserAutoComplete', () => {
-    afterEach(() => {
-        cleanup();
+  afterEach(() => {
+    cleanup();
+  });
+
+  it('renders the reporter input', () => {
+    render(<UserAutoComplete userValue={null} onUserValueChange={vi.fn()} />);
+
+    expect(screen.getByLabelText(/reporter/i)).toBeInTheDocument();
+  });
+
+  it('calls AutoCompleteSearch with the input value', async () => {
+    AutocompleteSearch.mockReturnValue([]);
+
+    const user = userEvent.setup();
+
+    render(<UserAutoComplete userValue={null} onUserValueChange={vi.fn()} />);
+
+    const input = screen.getByRole('combobox');
+
+    await user.type(input, 'Alice');
+    await waitFor(() => {
+      expect(AutocompleteSearch).toHaveBeenLastCalledWith(
+        '/users/search',
+        'Alice'
+      );
     });
+  });
 
-    it('renders the reporter input', () => {
-        render(
-            <UserAutoComplete
-                userValue={null}
-                onUserValueChange={vi.fn()}
-            />
-        );
+  it('calls onUserValueChange when a user is selected', async () => {
+    const mockUser = { fullName: 'Alice' };
+    AutocompleteSearch.mockReturnValue([mockUser]);
+    const mockChange = vi.fn();
+    render(
+      <UserAutoComplete userValue={null} onUserValueChange={mockChange} />
+    );
 
-        expect(screen.getByLabelText(/reporter/i)).toBeInTheDocument();
-    });
+    const input = screen.getByRole('combobox');
 
-    it('calls AutoCompleteSearch with the input value', async () => {
-        AutocompleteSearch.mockReturnValue([]);
+    fireEvent.mouseDown(input);
 
-        const user = userEvent.setup();
+    const option = await screen.findByText('Alice');
+    fireEvent.click(option);
 
-        render(
-            <UserAutoComplete
-                userValue={null}
-                onUserValueChange={vi.fn()}
-            />
-        );
+    expect(mockChange).toHaveBeenCalledWith(mockUser);
+  });
 
-        const input = screen.getByRole('combobox');
+  it('renders empty string for options without full name', async () => {
+    const mockUser = {};
+    AutocompleteSearch.mockReturnValue([mockUser]);
+    const mockChange = vi.fn();
+    render(
+      <UserAutoComplete userValue={null} onUserValueChange={mockChange} />
+    );
 
-        await user.type(input, 'Alice');
-        await waitFor(() => {
-            expect(AutocompleteSearch).toHaveBeenLastCalledWith(
-                '/users/search',
-                'Alice'
-            );
-        });
-    });
+    const input = screen.getByRole('combobox');
 
-    it('calls onUserValueChange when a user is selected', async () => {
-        const mockUser = { fullName: 'Alice' };
-        AutocompleteSearch.mockReturnValue([mockUser]);
-        const mockChange = vi.fn();
-        render(
-            <UserAutoComplete
-                userValue={null}
-                onUserValueChange={mockChange}
-            />
-        );
+    fireEvent.mouseDown(input);
 
-        const input = screen.getByRole('combobox');
+    const options = await screen.findAllByRole('option');
+    expect(options[0].textContent).toBe('');
 
-        fireEvent.mouseDown(input);
-
-        const option = await screen.findByText('Alice');
-        fireEvent.click(option);
-
-        expect(mockChange).toHaveBeenCalledWith(mockUser);
-    });
-
-    it('renders empty string for options without full name', async () => {
-        const mockUser = {};
-        AutocompleteSearch.mockReturnValue([mockUser]);
-        const mockChange = vi.fn();
-        render(
-            <UserAutoComplete
-                userValue={null}
-                onUserValueChange={mockChange}
-            />
-        );
-
-        const input = screen.getByRole('combobox');
-
-        fireEvent.mouseDown(input);
-
-        const options = await screen.findAllByRole('option');
-        expect(options[0].textContent).toBe('');
-
-        fireEvent.click(options[0]);
-        expect(mockChange).toHaveBeenCalledWith(mockUser);
-    });
+    fireEvent.click(options[0]);
+    expect(mockChange).toHaveBeenCalledWith(mockUser);
+  });
 });
