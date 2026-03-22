@@ -317,7 +317,6 @@ export default function Board() {
           </Alert>
         </Snackbar>
 
-
         {/* View/Edit Issue Dialog */}
         {selectedIssue && (
           <Dialog
