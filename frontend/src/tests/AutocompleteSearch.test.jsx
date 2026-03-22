@@ -62,5 +62,23 @@ describe('AutocompleteSearch', () => {
 
         rerender({ query: '' });
         expect(result.current).toEqual([]);
-    })
+    });
+
+    it('silently ignores CanceledError from aborted requests', async () => {
+        const canceledError = new Error('canceled');
+        canceledError.name = 'CanceledError';
+        api.get.mockRejectedValue(canceledError);
+
+        const consoleSpy = vi.spyOn(console, 'error');
+
+        const { unmount } = renderHook(() =>
+            AutocompleteSearch('/search', 'test')
+        );
+
+        await act(async () => { vi.advanceTimersByTime(300); });
+        unmount();
+
+        expect(consoleSpy).not.toHaveBeenCalled();
+        consoleSpy.mockRestore();
+  });
 });
