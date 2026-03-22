@@ -20,7 +20,7 @@ function CreateIssueForm({
   onIssueCreation, // callback to close modal / refresh
 }) {
   const { currentProject } = useProject();
-  const { currentBoard } = useBoard();
+  const { currentBoard } = useBoard() ?? {};
   const { user } = useAuth();
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
