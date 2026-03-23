@@ -13,6 +13,7 @@
     "ci:all": "npm ci && npm ci --prefix frontend && npm ci --prefix backend",
     "test": "vitest run --config backend/vitest.config.js && vitest run --config frontend/vitest.config.js",
     "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --config backend/vitest.config.js --coverage && vitest run --config frontend/vitest.config.js --coverage",
     "lint": "npm run lint --prefix frontend && npm run lint --prefix backend"
   },
   "devDependencies": {
