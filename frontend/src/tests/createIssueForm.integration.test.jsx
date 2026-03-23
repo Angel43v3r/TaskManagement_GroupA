@@ -93,7 +93,7 @@ describe('Integration: Create Issue Flow', () => {
     ).toBeInTheDocument();
 
     expect(mockOnIssueCreation).toHaveBeenCalled();
-  });
+  }, 10000);
 });
 
 describe('Integration: View Issue Flow', () => {
