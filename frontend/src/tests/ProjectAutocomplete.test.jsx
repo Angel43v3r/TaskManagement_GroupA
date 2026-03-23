@@ -1,4 +1,4 @@
-import ProjectAutocomplete from "../components/IssueForm/ProjectAutocomplete";
+import ProjectAutocomplete from '../components/IssueForm/ProjectAutocomplete';
 import {
   render,
   screen,
@@ -19,15 +19,11 @@ describe('ProjectAutocomplete', () => {
     cleanup();
   });
 
-    it('renders the options input', () => {
-        render(<ProjectAutocomplete
-            value={null}
-            onChange={vi.fn()}
-            />
-        );
+  it('renders the options input', () => {
+    render(<ProjectAutocomplete value={null} onChange={vi.fn()} />);
 
-        expect(screen.getByLabelText(/project/i)).toBeInTheDocument();
-    });
+    expect(screen.getByLabelText(/project/i)).toBeInTheDocument();
+  });
 
   it('calls AutoCompleteSearch with the input value', async () => {
     AutocompleteSearch.mockReturnValue([]);
@@ -80,5 +76,4 @@ describe('ProjectAutocomplete', () => {
     fireEvent.click(options[0]);
     expect(mockChange).toHaveBeenCalledWith(mockProject);
   });
-
 });
