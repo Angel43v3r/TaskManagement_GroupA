@@ -178,7 +178,7 @@ describe('syncUser middleware', () => {
     expect(next.mock.calls[0][0].message).toBe('DB down');
   });
 
-  it('does upsert when existinf user is stale even if timezone header is unchanged', async () => {
+  it('does upsert when existing user is stale even if timezone header is unchanged', async () => {
     const existing = {
       timezone: 'UTC',
       lastSyncedAt: new Date(Date.now() - 10 * 60 * 1000), // stale 10 min ago
@@ -207,6 +207,10 @@ describe('syncUser middleware', () => {
       id: 'sub-4',
       timezone: 'UTC',
       role: 'developer',
+    });
+    expect(req.dbUser).toMatchObject({
+      id: 'sub-4',
+      timezone: 'UTC',
     });
     expect(next).toHaveBeenCalledOnce();
   });
