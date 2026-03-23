@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 function DescriptionField({ description, onUpdateDescription }) {
   return (
     <TextField
-      label="Description"
+      label="Description: "
       multiline
       minRows={4}
       value={description}
