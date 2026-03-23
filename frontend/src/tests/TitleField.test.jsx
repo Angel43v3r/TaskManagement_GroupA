@@ -9,14 +9,14 @@ describe('TitleField', () => {
   });
 
   it('renders the title label', () => {
-    render(<TitleField title="" onUPdateTitle={vi.fn()} />);
+    render(<TitleField title="" onUpdateTitle={vi.fn()} />);
 
     expect(screen.getByLabelText(/Title/i)).toBeInTheDocument();
   });
 
   it('displays the provided title value', () => {
     const mockUpdate = vi.fn();
-    render(<TitleField title="task" onUPdateTitle={mockUpdate} />);
+    render(<TitleField title="task" onUpdateTitle={mockUpdate} />);
 
     expect(screen.getByDisplayValue('task')).toBeInTheDocument();
   });
