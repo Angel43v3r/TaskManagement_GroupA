@@ -20,7 +20,7 @@ const TYPE_COLORS = {
   bug: 'coral',
 };
 
-function ViewIssue({ issue, onClose, onEditSuccess }) {
+function ViewIssue({ issue, onClose, onDelete, onEditSuccess }) {
   const [isEditing, setIsEditing] = useState(false);
 
   // Get status display info
@@ -72,6 +72,11 @@ function ViewIssue({ issue, onClose, onEditSuccess }) {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
+          {onDelete && (
+            <Button variant="outlined" onClick={onDelete}>
+              Delete
+            </Button>
+          )}
           <Button variant="outlined" onClick={onClose}>
             Close
           </Button>
@@ -180,6 +185,7 @@ function ViewIssue({ issue, onClose, onEditSuccess }) {
 ViewIssue.propTypes = {
   issue: PropTypes.object.isRequired,
   onClose: PropTypes.func.isRequired,
+  onDelete: PropTypes.func,
   onEditSuccess: PropTypes.func,
 };
 

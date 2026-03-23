@@ -136,7 +136,7 @@ function Column({ column, issues, onViewClick }) {
 
 export default function Board() {
   const { currentBoard } = useBoard();
-  const { issues, fetchIssues, error, setError } = useIssues();
+  const { issues, fetchIssues, deleteIssue, error, setError } = useIssues();
   const [openCreateIssue, setOpenCreateIssue] = useState(false);
   const { project } = useOutletContext();
   const [searchQuery, setSearchQuery] = useState('');
@@ -168,6 +168,12 @@ export default function Board() {
   };
 
   const handleCloseViewIssue = () => {
+    setSelectedIssue(null);
+  };
+
+  const handleDeleteIssue = async () => {
+    await deleteIssue(selectedIssue.id);
+    await fetchIssues();
     setSelectedIssue(null);
   };
 
@@ -329,6 +335,7 @@ export default function Board() {
               <ViewIssue
                 issue={selectedIssue}
                 onClose={handleCloseViewIssue}
+                onDelete={handleDeleteIssue}
                 onEditSuccess={handleEditSuccess}
               />
             </DialogContent>
