@@ -140,4 +140,71 @@ describe('CreateProjectPage', () => {
 
     expect(mockNavigate).toHaveBeenCalledWith('/projects');
   });
+
+  it('allows typing in description field', () => {
+    render(<CreateProjectPage />);
+    const descInput = screen.getByLabelText(/Description/i);
+    fireEvent.change(descInput, { target: { value: 'My project description' } });
+    expect(descInput.value).toBe('My project description');
+  });
+
+  it('changes category via select', () => {
+    render(<CreateProjectPage />);
+    const comboboxes = screen.getAllByRole('combobox');
+    fireEvent.mouseDown(comboboxes[0]);
+    fireEvent.click(screen.getByRole('option', { name: 'New Development' }));
+    expect(comboboxes[0].textContent).toContain('New Development');
+  });
+
+  it('changes status via select', () => {
+    render(<CreateProjectPage />);
+    const comboboxes = screen.getAllByRole('combobox');
+    fireEvent.mouseDown(comboboxes[1]);
+    fireEvent.click(screen.getByRole('option', { name: 'Completed' }));
+    expect(comboboxes[1].textContent).toContain('Completed');
+  });
+
+  it('calls setProjects updater function with new project prepended', async () => {
+    const fakeProject = { id: 'new-id', name: 'My Project', key: 'MYPR' };
+    let capturedUpdater = null;
+    useProject.mockReturnValue({
+      setProjects: vi.fn((fn) => {
+        if (typeof fn === 'function') {
+          capturedUpdater = fn;
+          fn([]);
+        }
+      }),
+    });
+    projectsApi.create.mockResolvedValue({ data: fakeProject });
+
+    render(<CreateProjectPage />);
+    fireEvent.change(screen.getByLabelText(/Project Name/i), {
+      target: { value: 'My Project' },
+    });
+    fireEvent.change(screen.getByLabelText(/Project Key/i), {
+      target: { value: 'MYPR' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /Create Project/i }));
+
+    await screen.findByRole('button', { name: /Done/i });
+    expect(capturedUpdater).not.toBeNull();
+    expect(capturedUpdater([])).toEqual([fakeProject]);
+  });
+
+  it('shows generic error message when API error has no message', async () => {
+    projectsApi.create.mockRejectedValue(new Error('Network error'));
+
+    render(<CreateProjectPage />);
+    fireEvent.change(screen.getByLabelText(/Project Name/i), {
+      target: { value: 'My Project' },
+    });
+    fireEvent.change(screen.getByLabelText(/Project Key/i), {
+      target: { value: 'PROJ' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /Create Project/i }));
+
+    expect(
+      await screen.findByText('Failed to create project. Please try again.')
+    ).toBeDefined();
+  });
 });

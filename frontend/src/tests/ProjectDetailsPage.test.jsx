@@ -136,4 +136,49 @@ describe('ProjectDetailsPage', () => {
     fireEvent.click(screen.getByRole('button', { name: /Cancel/i }));
     expect(mockNavigate).toHaveBeenCalledWith('/projects/abc-123');
   });
+
+  it('allows editing the description field', () => {
+    render(<ProjectDetailsPage />);
+    const descInput = screen.getByLabelText(/Description/i);
+    fireEvent.change(descInput, { target: { value: 'Updated description' } });
+    expect(descInput.value).toBe('Updated description');
+  });
+
+  it('changes category via select', () => {
+    render(<ProjectDetailsPage />);
+    const comboboxes = screen.getAllByRole('combobox');
+    fireEvent.mouseDown(comboboxes[0]);
+    fireEvent.click(screen.getByRole('option', { name: 'New Development' }));
+    expect(comboboxes[0].textContent).toContain('New Development');
+  });
+
+  it('changes status via select', () => {
+    render(<ProjectDetailsPage />);
+    const comboboxes = screen.getAllByRole('combobox');
+    fireEvent.mouseDown(comboboxes[1]);
+    fireEvent.click(screen.getByRole('option', { name: 'Completed' }));
+    expect(comboboxes[1].textContent).toContain('Completed');
+  });
+
+  it('calls setProjects updater that maps updated project into list', async () => {
+    const updatedProject = { ...baseProject, name: 'Updated' };
+    let capturedUpdater = null;
+    useProject.mockReturnValue({
+      setProjects: vi.fn((fn) => {
+        if (typeof fn === 'function') {
+          capturedUpdater = fn;
+          fn([baseProject]);
+        }
+      }),
+    });
+    projectsApi.update.mockResolvedValue({ data: updatedProject });
+
+    render(<ProjectDetailsPage />);
+    fireEvent.click(screen.getByRole('button', { name: /Save Changes/i }));
+
+    await screen.findByRole('button', { name: /Save Changes/i });
+    expect(capturedUpdater).not.toBeNull();
+    const result = capturedUpdater([baseProject]);
+    expect(result[0]).toEqual(updatedProject);
+  });
 });

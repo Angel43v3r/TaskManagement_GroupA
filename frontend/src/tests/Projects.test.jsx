@@ -167,4 +167,96 @@ describe('ProjectsPage', () => {
 
     expect(mockNavigate).toHaveBeenCalledWith('/projects/create');
   });
+
+  it('toggles star on a project and saves to localStorage', () => {
+    useProject.mockReturnValue({
+      projects: fakeProjects,
+      loading: false,
+      error: null,
+    });
+    render(<ProjectsPage />);
+
+    // Buttons: [Create Project, star-proj-1, star-proj-2]
+    const allButtons = screen.getAllByRole('button');
+    fireEvent.click(allButtons[1]); // first star button
+
+    const starred = JSON.parse(localStorage.getItem('jiro:starredProjects'));
+    expect(starred).toContain('proj-1');
+  });
+
+  it('untoggles a star that was already starred', () => {
+    localStorage.setItem('jiro:starredProjects', JSON.stringify(['proj-1']));
+    useProject.mockReturnValue({
+      projects: fakeProjects,
+      loading: false,
+      error: null,
+    });
+    render(<ProjectsPage />);
+
+    const allButtons = screen.getAllByRole('button');
+    fireEvent.click(allButtons[1]); // click again to unstar
+
+    const starred = JSON.parse(localStorage.getItem('jiro:starredProjects'));
+    expect(starred).not.toContain('proj-1');
+  });
+
+  it('clicking the star button does not navigate to project (stopPropagation)', () => {
+    useProject.mockReturnValue({
+      projects: fakeProjects,
+      loading: false,
+      error: null,
+    });
+    render(<ProjectsPage />);
+
+    const allButtons = screen.getAllByRole('button');
+    fireEvent.click(allButtons[1]); // star button
+
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it('loads starred state from localStorage on mount', () => {
+    localStorage.setItem('jiro:starredProjects', JSON.stringify(['proj-2']));
+    useProject.mockReturnValue({
+      projects: fakeProjects,
+      loading: false,
+      error: null,
+    });
+    render(<ProjectsPage />);
+
+    // proj-2 should appear starred — the starred state is loaded from storage
+    const starred = JSON.parse(localStorage.getItem('jiro:starredProjects'));
+    expect(starred).toContain('proj-2');
+  });
+
+  it('filters projects by category via select', () => {
+    useProject.mockReturnValue({
+      projects: fakeProjects,
+      loading: false,
+      error: null,
+    });
+    render(<ProjectsPage />);
+
+    const comboboxes = screen.getAllByRole('combobox');
+    fireEvent.mouseDown(comboboxes[0]); // category select
+    fireEvent.click(screen.getByRole('option', { name: 'Maintenance' }));
+
+    expect(screen.queryByText('Alpha Project')).toBeNull();
+    expect(screen.getByText('Beta Project')).toBeDefined();
+  });
+
+  it('filters projects by status via select', () => {
+    useProject.mockReturnValue({
+      projects: fakeProjects,
+      loading: false,
+      error: null,
+    });
+    render(<ProjectsPage />);
+
+    const comboboxes = screen.getAllByRole('combobox');
+    fireEvent.mouseDown(comboboxes[1]); // status select
+    fireEvent.click(screen.getByRole('option', { name: 'Active' }));
+
+    expect(screen.getByText('Alpha Project')).toBeDefined();
+    expect(screen.queryByText('Beta Project')).toBeNull();
+  });
 });
