@@ -22,6 +22,7 @@ import IssueCard from '../components/issue-card/IssueCard.jsx';
 import { useBoard } from '../context/BoardContext.jsx';
 import { useIssues } from '../context/IssuesContext.jsx';
 import CreateIssueForm from '../components/IssueForm/CreateIssueForm.jsx';
+import ViewIssue from '../components/IssueForm/ViewIssue.jsx';
 import { useDroppable } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -34,7 +35,7 @@ import {
 } from '../context/BoardDndContext.jsx';
 
 // Column Component
-function Column({ column, issues }) {
+function Column({ column, issues, onViewClick }) {
   const { activeIssue } = useBoardDnd();
   const columnIssues = issues.filter((issue) => issue.status === column.id);
   const issueCount = columnIssues.length;
@@ -125,7 +126,7 @@ function Column({ column, issues }) {
           strategy={verticalListSortingStrategy}
         >
           {columnIssues.map((issue) => (
-            <IssueCard key={issue.id} issue={issue} />
+            <IssueCard key={issue.id} issue={issue} onViewClick={onViewClick} />
           ))}
         </SortableContext>
       </Box>
@@ -135,10 +136,11 @@ function Column({ column, issues }) {
 
 export default function Board() {
   const { currentBoard } = useBoard();
-  const { issues, fetchIssues, error, setError } = useIssues();
+  const { issues, fetchIssues, deleteIssue, error, setError } = useIssues();
   const [openCreateIssue, setOpenCreateIssue] = useState(false);
   const { project } = useOutletContext();
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedIssue, setSelectedIssue] = useState(null);
   const [errorToast, setErrorToast] = useState(null);
 
   // Show toast when error occurs
@@ -159,6 +161,25 @@ export default function Board() {
   const handleIssueCreation = () => {
     setOpenCreateIssue(false);
     fetchIssues();
+  };
+
+  const handleViewClick = (issue) => {
+    setSelectedIssue(issue);
+  };
+
+  const handleCloseViewIssue = () => {
+    setSelectedIssue(null);
+  };
+
+  const handleDeleteIssue = async () => {
+    await deleteIssue(selectedIssue.id);
+    await fetchIssues();
+    setSelectedIssue(null);
+  };
+
+  const handleEditSuccess = async () => {
+    await fetchIssues();
+    setSelectedIssue(null);
   };
 
   const filteredIssues = issues.filter((issue) =>
@@ -264,10 +285,16 @@ export default function Board() {
 
           <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2 }}>
             {columns.map((column) => (
-              <Column key={column.id} column={column} issues={filteredIssues} />
+              <Column
+                key={column.id}
+                column={column}
+                issues={filteredIssues}
+                onViewClick={handleViewClick}
+              />
             ))}
           </Box>
         </Box>
+
         <Dialog
           open={openCreateIssue}
           onClose={() => setOpenCreateIssue(false)}
@@ -295,6 +322,25 @@ export default function Board() {
             {errorToast}
           </Alert>
         </Snackbar>
+
+        {/* View/Edit Issue Dialog */}
+        {selectedIssue && (
+          <Dialog
+            open={true}
+            onClose={handleCloseViewIssue}
+            fullWidth
+            maxWidth="sm"
+          >
+            <DialogContent>
+              <ViewIssue
+                issue={selectedIssue}
+                onClose={handleCloseViewIssue}
+                onDelete={handleDeleteIssue}
+                onEditSuccess={handleEditSuccess}
+              />
+            </DialogContent>
+          </Dialog>
+        )}
       </Box>
     </BoardDndProvider>
   );

@@ -119,6 +119,17 @@ export function IssuesProvider({ children }) {
     [issues, currentProject?.id, currentBoard?.id]
   );
 
+  const deleteIssue = useCallback(
+    async (issueId) => {
+      try {
+        await issuesApi.delete(issueId);
+      } catch (e) {
+        setError(e);
+      }
+    },
+    [issuesApi]
+  );
+
   // For within-column reordering
   const reorderIssues = useCallback(
     async (columnId, oldIndex, newIndex) => {
@@ -153,6 +164,7 @@ export function IssuesProvider({ children }) {
         error,
         setError,
         fetchIssues,
+        deleteIssue,
         updateIssue,
         updatingIds,
         moveIssue,
