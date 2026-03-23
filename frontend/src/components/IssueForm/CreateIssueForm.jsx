@@ -8,7 +8,7 @@ import { useBoard } from '../../context/BoardContext';
 import { useProject } from '../../context/ProjectContext';
 import DescriptionField from './DescriptionField';
 import DueDatePicker from './DueDatePicker';
-import IssueTypeToggle from './issueTypeToggle';
+import IssueTypeToggle from './IssueTypeToggle';
 import PriorityLabel from './PriorityLabel';
 import StoryPointButtonGroup from './StoryPointButtonGroup';
 import TitleField from './TitleField';
