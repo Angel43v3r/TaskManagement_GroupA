@@ -3,6 +3,7 @@ import Issue from './Issue.js';
 import IssueAssignee from './IssueAssignee.js';
 import Attachment from './Attachment.js';
 import Board from './Board.js';
+import IssueBoard from './IssueBoard.js';
 import AttachmentProject from './AttachmentProject.js';
 import Project from './Project.js';
 
@@ -50,14 +51,18 @@ export function applyAssociations() {
   Issue.belongsTo(Issue, { as: 'parent', foreignKey: 'parentIssueId' });
   Issue.hasMany(Issue, { as: 'subIssues', foreignKey: 'parentIssueId' });
 
-  Issue.belongsTo(Board, {
-    as: 'board',
-    foreignKey: 'boardId',
+  Issue.belongsToMany(Board, {
+    through: IssueBoard,
+    as: 'boards',
+    foreignKey: 'issueId',
+    otherKey: 'boardId',
   });
 
-  Board.hasMany(Issue, {
+  Board.belongsToMany(Issue, {
+    through: IssueBoard,
     as: 'issues',
     foreignKey: 'boardId',
+    otherKey: 'issueId',
   });
 
   // Project owner
@@ -72,5 +77,6 @@ export {
   Attachment,
   AttachmentProject,
   Board,
+  IssueBoard,
   Project,
 };

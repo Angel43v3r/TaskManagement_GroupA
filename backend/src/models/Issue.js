@@ -37,10 +37,6 @@ Issue.init(
       type: DataTypes.UUID,
       allowNull: false,
     },
-    boardId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-    },
     isArchived: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

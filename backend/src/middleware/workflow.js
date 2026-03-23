@@ -13,7 +13,9 @@ const requireWorkflowCompliance = async (req, res, next) => {
     const { status: newStatus } = req.body;
 
     if (!newStatus) {
-      return next();
+      return res.status(400).json({
+        message: 'New status is required',
+      });
     }
 
     const issue = await getById(issueId);

@@ -65,7 +65,7 @@ async function run() {
           title,
           description: faker.lorem.sentences(2),
           type: faker.helpers.arrayElement(sampleTypes),
-          status: 'backlog',
+          status: 'todo',
           priority: faker.helpers.arrayElement(['low', 'medium', 'high']),
           reporterId: reporter.id,
           storyPoints: faker.number.int({ min: 1, max: 8 }),
@@ -74,9 +74,9 @@ async function run() {
       });
 
       if (i % 3 === 0) {
-        await issue.update({ boardId: board1.id || board1 });
+        await issue.setBoards([board1]);
       } else {
-        await issue.update({ boardId: board2.id || board2 });
+        await issue.setBoards([board2]);
       }
     }
 

@@ -63,7 +63,10 @@ export default function CreateProjectPage() {
   return (
     <Box>
       <Box sx={{ maxWidth: 700, mx: 'auto', mt: 6, px: 3 }}>
-        <Typography variant="h4" sx={{ fontWeight: 400, mb: 4 }}>
+        <Typography
+          variant="h4"
+          sx={{ fontWeight: 400, color: '#e0e0e0', mb: 4 }}
+        >
           Create Project
         </Typography>
 

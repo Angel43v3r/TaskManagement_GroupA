@@ -76,10 +76,7 @@ export const getProjects = async (req, res, next) => {
     const limit = Math.max(1, parseInt(req.query.limit) || 10);
     const offset = (page - 1) * limit;
 
-    const where = {};
-    if (req.query.ownerId) {
-      where.owner_id = req.query.owner_id;
-    }
+    const where = { owner_id: req.user.sub };
     if (req.query.category) {
       where.category = req.query.category;
     }
@@ -115,15 +112,11 @@ export const getProjects = async (req, res, next) => {
 // GET /api/projects/:id
 export const getProjectById = async (req, res, next) => {
   try {
-    if (!req.params.id)
-      return res.status(400).json({ error: 'Project Id not supplied' });
-
-    const where = { id: req.params.id };
-    if (req.query.owner_id) {
-      where.owner_id = req.query.owner_id;
-    }
     const project = await Project.findOne({
-      where,
+      where: {
+        id: req.params.id,
+        owner_id: req.user.sub,
+      },
       include: [
         {
           model: User,
@@ -146,10 +139,8 @@ export const getProjectById = async (req, res, next) => {
 // GET /api/projects/:id/boards
 export const getProjectBoards = async (req, res, next) => {
   try {
-    const where = { id: req.params.id };
-    if (req.query.owned_id) where.owner_id = req.query.owned_id;
     const project = await Project.findOne({
-      where,
+      where: { id: req.params.id, owner_id: req.user.sub },
     });
     if (!project) return res.status(404).json({ error: 'Project not found' });
 
@@ -163,10 +154,8 @@ export const getProjectBoards = async (req, res, next) => {
 // PUT /api/projects/:id
 export const updateProject = async (req, res, next) => {
   try {
-    const where = { id: req.params.id };
-    if (req.query.owner_id) where.owner_id = req.query.owner_id;
     const project = await Project.findOne({
-      where,
+      where: { id: req.params.id, owner_id: req.user.sub },
     });
 
     if (!project) {

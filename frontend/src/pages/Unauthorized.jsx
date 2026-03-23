@@ -1,8 +1,6 @@
 import { Box, Container, Typography, Button } from '@mui/material';
 import { Lock } from '@mui/icons-material';
 import keycloak from '../keycloak';
-// eslint-disable-next-line no-unused-vars
-import React from 'react';
 
 export default function Unauthorized({ role }) {
   return (

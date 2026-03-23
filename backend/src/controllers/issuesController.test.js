@@ -31,7 +31,7 @@ describe('issuesController', () => {
         title: 'Test Issue',
         description: 'Something broke',
         reporterId: 1,
-        boardId: 1,
+        boardIds: [1],
         assigneeIds: [2],
       },
     };
@@ -43,6 +43,7 @@ describe('issuesController', () => {
 
     const fakeIssue = {
       id: 1,
+      setBoards: vi.fn(),
       setAssignees: vi.fn(),
     };
 
@@ -51,17 +52,18 @@ describe('issuesController', () => {
     await createIssue(req, res);
 
     expect(Issue.create).toHaveBeenCalled();
+    expect(fakeIssue.setBoards).toHaveBeenCalledWith([1]);
     expect(fakeIssue.setAssignees).toHaveBeenCalledWith([2]);
     expect(res.status).toHaveBeenCalledWith(201);
   });
 
-  it('createIssue creates issue when no assignees provided (does not call setAssignees)', async () => {
+  it('createIssue creates issue without boards', async () => {
     const req = {
       body: {
         title: 'Test issue',
         reporterId: 1,
-        boardId: 1,
-        assigneeIds: [],
+        boardIds: [],
+        assigneeIds: [2],
       },
     };
 
@@ -72,14 +74,14 @@ describe('issuesController', () => {
 
     const fakeIssue = {
       id: 1,
-      setAssignees: vi.fn(),
+      setBoards: vi.fn(),
     };
 
-    Issue.create.mockResolvedValue(fakeIssue);
+    Issue.create.mockResolvedValue({});
 
     await createIssue(req, res);
 
-    expect(fakeIssue.setAssignees).not.toHaveBeenCalled();
+    expect(fakeIssue.setBoards).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(201);
   });
 
@@ -163,6 +165,7 @@ describe('issuesController', () => {
     const fakeIssue = {
       update: vi.fn(),
       setAssignees: vi.fn(),
+      setBoards: vi.fn(),
     };
 
     Issue.findByPk
@@ -321,9 +324,8 @@ describe('issuesController', () => {
 
     expect(Issue.findAll).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: expect.objectContaining({ boardId: 5 }),
         include: expect.arrayContaining([
-          expect.objectContaining({ as: 'assignees' }),
+          expect.objectContaining({ where: { id: 5 } }),
         ]),
       })
     );
