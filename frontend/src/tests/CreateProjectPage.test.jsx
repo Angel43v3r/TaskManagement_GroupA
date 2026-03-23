@@ -39,7 +39,9 @@ describe('CreateProjectPage', () => {
 
   it('renders the page title', () => {
     render(<CreateProjectPage />);
-    expect(screen.getByRole('heading', { name: /Create Project/i })).toBeDefined();
+    expect(
+      screen.getByRole('heading', { name: /Create Project/i })
+    ).toBeDefined();
   });
 
   it('renders the project name and key fields', () => {
@@ -50,7 +52,9 @@ describe('CreateProjectPage', () => {
 
   it('renders the Create Project submit button', () => {
     render(<CreateProjectPage />);
-    expect(screen.getByRole('button', { name: /Create Project/i })).toBeDefined();
+    expect(
+      screen.getByRole('button', { name: /Create Project/i })
+    ).toBeDefined();
   });
 
   it('shows validation error when submitting without a name', async () => {
@@ -144,7 +148,9 @@ describe('CreateProjectPage', () => {
   it('allows typing in description field', () => {
     render(<CreateProjectPage />);
     const descInput = screen.getByLabelText(/Description/i);
-    fireEvent.change(descInput, { target: { value: 'My project description' } });
+    fireEvent.change(descInput, {
+      target: { value: 'My project description' },
+    });
     expect(descInput.value).toBe('My project description');
   });
 

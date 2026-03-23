@@ -98,7 +98,11 @@ describe('projectController', () => {
         },
         user: { sub: 'user-1' },
       };
-      const fakeCreated = { id: 'new-id', name: 'Test', owner: { firstName: 'John' } };
+      const fakeCreated = {
+        id: 'new-id',
+        name: 'Test',
+        owner: { firstName: 'John' },
+      };
       Project.findOne
         .mockResolvedValueOnce(null) // key not taken
         .mockResolvedValueOnce(fakeCreated); // re-fetch with owner
