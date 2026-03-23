@@ -5,9 +5,9 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: 'jsdom',
-    setupFiles: ['./src/setupTests.js'],
-    include: ['src/tests/**/*.test.{js,jsx}'],
-    exclude: ['src/tests/**/*.integration.test.{js,jsx}'],
+    setupFiles: ['./frontend/src/setupTests.js'],
+    include: ['./frontend/src/tests/**/*.test.{js,jsx}'],
+    exclude: ['./frontend/src/tests/**/*.integration.test.{js,jsx}'],
     globals: true,
   },
 });
