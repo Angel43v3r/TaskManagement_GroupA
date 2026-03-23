@@ -97,6 +97,10 @@ describe('Integration: Create Issue Flow', () => {
 });
 
 describe('Integration: View Issue Flow', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   const mockIssue = {
     id: 'issue-123',
     title: 'Test Issue Title',
