@@ -11,7 +11,7 @@
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier --write .",
     "ci:all": "npm ci && npm ci --prefix frontend && npm ci --prefix backend",
-    "test": "vitest",
+    "test": "vitest run backend/src && vitest --config frontend/vite.config.js",
     "test:ui": "vitest --ui",
     "lint": "npm run lint --prefix frontend && npm run lint --prefix backend"
   },
