@@ -1,4 +1,3 @@
-import React from 'react';
 import ProjectAutocomplete from '../components/IssueForm/ProjectAutocomplete';
 import {
   render,
