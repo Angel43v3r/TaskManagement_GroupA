@@ -2,7 +2,7 @@ import React from 'react';
 globalThis.React = React;
 
 import * as matchers from '@testing-library/jest-dom/matchers';
-import { expect } from 'vitest';
+import { expect, beforeAll, afterAll } from 'vitest';
 expect.extend(matchers);
 
 const originalError = console.error;
