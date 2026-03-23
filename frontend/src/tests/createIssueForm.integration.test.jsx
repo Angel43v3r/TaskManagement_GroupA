@@ -38,9 +38,7 @@ describe('Integration: Create Issue Flow', () => {
 
     const mockOnIssueCreation = vi.fn();
 
-    render(
-      <CreateIssueForm onIssueCreation={mockOnIssueCreation} />
-    );
+    render(<CreateIssueForm onIssueCreation={mockOnIssueCreation} />);
 
     // Fill in form
     const titleInput = screen.getByLabelText(/title/i);
@@ -50,7 +48,7 @@ describe('Integration: Create Issue Flow', () => {
 
     const descriptionInput = screen.getByLabelText(/description/i);
     fireEvent.change(descriptionInput, {
-        target: {value: 'Test Issue description'},
+      target: { value: 'Test Issue description' },
     });
 
     const user = userEvent.setup();
@@ -60,12 +58,11 @@ describe('Integration: Create Issue Flow', () => {
     const mediumOption = screen.getByText('medium');
     await user.click(mediumOption);
 
-    const storyptSelect = screen.getByRole('button', {name: '5'});
+    const storyptSelect = screen.getByRole('button', { name: '5' });
     await user.click(storyptSelect);
 
-    const typeSelect = screen.getByRole('button', {name: 'bug'});
+    const typeSelect = screen.getByRole('button', { name: 'bug' });
     await user.click(typeSelect);
-
 
     // Submit form
     const submitButton = screen.getByRole('button', {
