@@ -119,6 +119,17 @@ export function IssuesProvider({ children }) {
     [issues, currentProject?.id, currentBoard?.id]
   );
 
+  const deleteIssue = useCallback(
+    async (issueId) => {
+      try {
+        await issuesApi.delete(issueId);
+      } catch (e) {
+        setError(e);
+      }
+    },
+    [issuesApi]
+  );
+
   // For within-column reordering
   const reorderIssues = useCallback(
     async (columnId, oldIndex, newIndex) => {
@@ -153,6 +164,7 @@ export function IssuesProvider({ children }) {
         error,
         setError,
         fetchIssues,
+        deleteIssue,
         updateIssue,
         updatingIds,
         moveIssue,
@@ -165,3 +177,27 @@ export function IssuesProvider({ children }) {
 }
 
 export const useIssues = () => useContext(IssuesContext);
+
+export function useAllIssues() {
+  const [issues, setIssues] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchIssues = async () => {
+      setLoading(true);
+      try {
+        const { data } = await issuesApi.getAllIssues();
+
+        setIssues(data.issues);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchIssues();
+  }, []);
+
+  return { issues, loading, error };
+}

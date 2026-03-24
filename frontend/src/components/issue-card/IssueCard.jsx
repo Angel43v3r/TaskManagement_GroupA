@@ -1,8 +1,8 @@
 import { Box, Typography, Paper, IconButton, Tooltip } from '@mui/material';
 import {
-  EditOutlined as EditIcon,
   Circle as CircleIcon,
   AccountTreeOutlined as NestingIcon,
+  VisibilityOutlined as ViewIcon,
 } from '@mui/icons-material';
 import StoryPoints from './StoryPoints.jsx';
 import Assignee from './Assignee.jsx';
@@ -50,7 +50,7 @@ function getIssueTypeIcon(type) {
   }
 }
 
-export default function IssueCard({ issue, isDragging = false }) {
+export default function IssueCard({ issue, isDragging = false, onViewClick }) {
   const { updateIssue } = useIssues();
 
   let assigneeName = issue.assignee;
@@ -79,6 +79,14 @@ export default function IssueCard({ issue, isDragging = false }) {
   const handleAssign = (user) => {
     const assigneeIds = user ? [user.id] : [];
     updateIssue(issue.id, { assigneeIds });
+  };
+
+  // Handle view click
+  const handleViewClick = (e) => {
+    e.stopPropagation();
+    if (onViewClick) {
+      onViewClick(issue);
+    }
   };
 
   // Sets up sortable w/ issue id for reordering support
@@ -124,7 +132,7 @@ export default function IssueCard({ issue, isDragging = false }) {
         },
       }}
     >
-      {/* Title and Edit Icon */}
+      {/* Title and View Icon */}
       <Box
         sx={{
           display: 'flex',
@@ -139,8 +147,13 @@ export default function IssueCard({ issue, isDragging = false }) {
         >
           {issue.title}
         </Typography>
-        <IconButton size="small" sx={{ color: '#ccc', p: 0.25 }}>
-          <EditIcon sx={{ fontSize: 16 }} />
+        {/* View icon */}
+        <IconButton
+          size="small"
+          sx={{ color: '#ccc', p: 0.25 }}
+          onClick={handleViewClick}
+        >
+          <ViewIcon sx={{ fontSize: 16 }} />
         </IconButton>
       </Box>
 

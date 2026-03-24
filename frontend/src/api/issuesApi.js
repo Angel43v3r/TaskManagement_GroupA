@@ -26,4 +26,21 @@ export const issuesApi = {
    * await issuesApi.update(101, { status: 'In Progress' });
    */
   update: (issueId, changes) => api.patch(`/issues/${issueId}`, changes),
+
+  /**
+   * Deletes an issue with given ID
+   * @param {string|number} issueId
+   * @returns void
+   * @example
+   * await issuesApi.delete(101);
+   */
+  delete: (issueId) => api.delete(`/issues/${issueId}`),
+
+  /**
+   * Retrieves all issues.
+   * @returns {Promise<Object>} A promise resolving to an array of issue objects.
+   * @example
+   * const issues = await tasksApi.getAllIssues();
+   */
+  getAllIssues: () => api.get(`/issues`),
 };
