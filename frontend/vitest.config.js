@@ -19,7 +19,7 @@ export default defineConfig({
         'src/api/axios.js',
         'src/api/usersApi.js',
         'src/auth/useAuth.js',
-        'src/Unauthorized.jsx',
+        'src/pages/Unauthorized.jsx',
       ],
     },
   },
