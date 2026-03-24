@@ -45,6 +45,7 @@ backend/coverage/
 *.sw?
 data/uploads/attachments
 
+**/coverage
 # Environment variables
 .env
 .env.local
