@@ -7,7 +7,20 @@ import { render, screen, cleanup } from '@testing-library/react';
 
 vi.mock('react-router', () => ({
   useOutletContext: vi.fn(),
+  useParams: vi.fn(),
   Link: ({ children, to }) => <a href={to}>{children}</a>,
+}));
+
+vi.mock('../components/Attachment', () => ({
+  default: () => <div data-testid="attachment" />,
+}));
+
+vi.mock('../components/ProjectFieldsDisplay', () => ({
+  default: ({ project }) => (
+    <div data-testid="project-fields">
+      {project.description || 'No description provided for this project.'}
+    </div>
+  ),
 }));
 
 import ProjectOverview from '../pages/ProjectOverview';
